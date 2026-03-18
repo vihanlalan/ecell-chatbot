@@ -147,6 +147,8 @@ button { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; cursor: po
 .dossier-table th { background: var(--black); color: var(--white); text-transform: uppercase; width: 140px; font-weight: 700;}
 .btn-large { background: var(--black); color: var(--white); padding: 16px 32px; font-size: 14px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.1em; border: none; align-self: flex-start; }
 .btn-large:hover { background: var(--indigo); }
+.reset-btn { align-self: flex-start; margin-top: 24px; cursor: pointer; font-size: 10px; text-transform: uppercase; font-weight: 700; font-family: 'Courier Prime', monospace; letter-spacing: 0.05em; color: var(--dark-gray); border-bottom: 1px dotted var(--dark-gray); transition: color 0.2s; }
+.reset-btn:hover { color: var(--red); border-color: var(--red); }
 
 .verdict-stamp { display: inline-block; font-family: 'Courier Prime', monospace; font-size: 48px; font-weight: 700; text-transform: uppercase; padding: 12px 24px; border: 4px solid; margin-bottom: 32px; transform: rotate(-2deg); }
 .verdict-stamp.pass { color: var(--green); border-color: var(--green); }
@@ -155,13 +157,7 @@ button { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; cursor: po
 /* ── MOBILE RESPONSIVENESS ── */
 @media (max-width: 768px) {
   #app { padding: 0; }
-  .document { 
-    max-width: 100%; 
-    width: 100%; 
-    height: 100%;
-    box-shadow: none; 
-    border: none; 
-  }
+  .document { max-width: 100%; width: 100%; height: 100%; box-shadow: none; border: none; }
   
   /* Header */
   .doc-header { flex-direction: column; }
@@ -174,15 +170,7 @@ button { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; cursor: po
 
   /* Transcript layout */
   .log-entry { flex-direction: column; }
-  .log-sidebar { 
-    width: 100%; 
-    border-right: none; 
-    border-bottom: 1px solid #ccc;
-    padding: 12px 16px; 
-    flex-direction: row; 
-    align-items: flex-start; 
-    justify-content: space-between; 
-  }
+  .log-sidebar { width: 100%; border-right: none; border-bottom: 1px solid #ccc; padding: 12px 16px; flex-direction: row; align-items: flex-start; justify-content: space-between; }
   .speaker-info-wrap { display: flex; flex-direction: column; }
   .speaker-score-wrap { display: flex; flex-direction: column; align-items: flex-end; text-align: right; }
   .speaker-delta { margin-top: 0; padding-top: 0; border-top: none; }
@@ -220,6 +208,7 @@ const MAX_PROMPTS = 7;
 const SESSION_SECS = 25 * 60;
 const APPROVAL_THRESHOLD = 62;
 const MAX_SCORE = MAX_PROMPTS * 15;
+const STORAGE_KEY = 'indigo_board_session_v1';
 
 const APPROVAL_LINES = ["Strategy approved. You demonstrated the rigour this board demands.", "The board votes in favour. Quarterly reviews will be merciless.", "Proposal approved. Execute accordingly."];
 const REJECT_LINES = ["This is precisely how airlines go bankrupt. Rejected.", "Hard pass. Return with numbers, not narratives.", "I've heard more rigorous pitches from interns. Rejected."];
@@ -244,35 +233,55 @@ const fmtTime = s => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s 
 const signalLabel = d => d > 10 ? "Strong argument — conviction gained" : d > 6 ? "Sound argument" : d > 3 ? "Weak argument — insufficient evidence" : "Unconvincing — no material conviction gained";
 
 function BoardSession() {
-  const [dossierStats] = useState(() => ({
+  const [initial] = useState(() => {
+    try {
+      const s = localStorage.getItem(STORAGE_KEY);
+      if (s) {
+        const p = JSON.parse(s);
+        // If the user refreshed during a temporary phase, return them to intro to prevent hanging states
+        if (["loading", "rules_wait", "rules", "active_loading"].includes(p.phase)) p.phase = "intro";
+        return p;
+      }
+    } catch(e) {}
+    return null;
+  });
+
+  const [dossierStats] = useState(initial?.dossierStats || {
     atf: Math.floor(Math.random() * 23) + 22,
     acGrounded: Math.floor(Math.random() * 42) + 61,
     otpStart: Math.floor(Math.random() * 7) + 80,
     otpEnd: Math.floor(Math.random() * 11) + 61,
     npsDrop: Math.floor(Math.random() * 15) + 14,
     stockDrop: Math.floor(Math.random() * 15) + 12
-  }));
+  });
 
-  const [phase, setPhase] = useState("intro"); 
-  const [messages, setMessages] = useState([]);
+  const [phase, setPhase] = useState(initial?.phase || "intro"); 
+  const [messages, setMessages] = useState(initial?.messages || []);
   const [input, setInput] = useState("");
-  const [score, setScore] = useState(0);
-  const [promptsLeft, setPromptsLeft] = useState(MAX_PROMPTS);
-  const [timeLeft, setTimeLeft] = useState(SESSION_SECS);
+  const [score, setScore] = useState(initial?.score || 0);
+  const [promptsLeft, setPromptsLeft] = useState(initial?.promptsLeft ?? MAX_PROMPTS);
+  const [timeLeft, setTimeLeft] = useState(initial?.timeLeft ?? SESSION_SECS);
   
   const [thinking, setThinking] = useState(false);
   const [typingText, setTypingText] = useState("");
   const [typingDelta, setTypingDelta] = useState(null);
-  const [verdict, setVerdict] = useState(null);
+  const [verdict, setVerdict] = useState(initial?.verdict || null);
 
-  const historyRef = useRef([]);
+  const historyRef = useRef(initial?.history || []);
   const scoreRef = useRef(0);
   const promptsRef = useRef(MAX_PROMPTS);
   const timers = useRef({ session: null, typing: null });
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
 
+  // Synchronize state locally and persistently
   useEffect(() => { scoreRef.current = score; promptsRef.current = promptsLeft; }, [score, promptsLeft]);
+  
+  useEffect(() => {
+    const stateSnapshot = { phase, messages, score, promptsLeft, timeLeft, verdict, dossierStats, history: historyRef.current };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(stateSnapshot));
+  }, [phase, messages, score, promptsLeft, timeLeft, verdict, dossierStats]);
+
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, thinking, typingText]);
   useEffect(() => () => { clearInterval(timers.current.session); clearInterval(timers.current.typing); }, []);
 
@@ -293,6 +302,11 @@ function BoardSession() {
       });
     }, 1000);
   }, [concludeSession]);
+
+  // Restart timer if browser is reloaded while phase is 'active'
+  useEffect(() => {
+    if (initial?.phase === "active") startTimer();
+  }, [initial, startTimer]);
 
   const animateTyping = useCallback((text, delta, onComplete) => {
     clearInterval(timers.current.typing);
@@ -358,6 +372,13 @@ function BoardSession() {
     } catch (e) { alert("Error connecting to server."); setPhase("intro"); }
   };
 
+  const clearRecords = () => {
+    if(confirm("Erase all local records and restart?")) {
+      localStorage.removeItem(STORAGE_KEY);
+      window.location.reload();
+    }
+  };
+
   const handleSend = async () => {
     const txt = input.trim();
     if (!txt || thinking || typingText || promptsRef.current <= 0) return;
@@ -388,7 +409,8 @@ function BoardSession() {
         e("tr", null, e("th", null, "Fleet Status"), e("td", null, `${dossierStats.acGrounded} A320neos grounded (P&W inspections)`)),
         e("tr", null, e("th", null, "OTP Index"), e("td", null, `Collapsed to ${dossierStats.otpEnd}% (DGCA Notices issued)`))
       )),
-      e("button", {className:"btn-large", onClick:initiateBriefing}, "Initiate Briefing")
+      e("button", {className:"btn-large", onClick:initiateBriefing}, "Initiate Briefing"),
+      initial && e("div", {className:"reset-btn", onClick:clearRecords}, "[ ERASE LOCAL LOGS & RESTART ]")
     )
   );
 
@@ -398,7 +420,8 @@ function BoardSession() {
       e("h1", {className:"cover-title"}, "Final Board Ruling"),
       e("div", {className:"cover-sub", style:{marginBottom:'16px'}}, "Executive Director: Vikram Rao"),
       e("p", {style:{fontFamily:"'Playfair Display'", fontSize:'18px', marginBottom:'32px'}}, verdict.line),
-      e("div", {style:{fontFamily:"'Courier Prime'", fontSize:'14px'}}, `Final Conviction: ${verdict.pct}% // Threshold: ${APPROVAL_THRESHOLD}%`)
+      e("div", {style:{fontFamily:"'Courier Prime'", fontSize:'14px'}}, `Final Conviction: ${verdict.pct}% // Threshold: ${APPROVAL_THRESHOLD}%`),
+      e("div", {className:"reset-btn", onClick:clearRecords}, "[ ERASE LOCAL LOGS & START NEW SESSION ]")
     )
   );
 
