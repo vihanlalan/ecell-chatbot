@@ -3,128 +3,207 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IndiGo · Board Strategy Session</title>
-<meta name="description" content="IndiGo Airlines AI Board Strategy Session — Convince a skeptical board member that your turnaround strategy is sound.">
+<title>Official Record: IndiGo Strategy Session</title>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
-:root{
-  --gold:#c9a227;--gold-light:#e8c060;--gold-dim:#7a6218;--gold-faint:#2a1f08;
-  --bg:#080705;--surface:#0f0d09;--surface2:#161310;--surface3:#1e1a12;
-  --cream:#f5ead8;--cream2:#c8b898;--cream3:#8a7a5a;--cream4:#3a3020;
-  --border-gold:#4a3a18;--border2:#3a3018;
-  --red:#c84040;--green:#3ab878;--amber:#c87020;
+/* ── STRICT BRUTALIST CORPORATE THEME ── */
+:root {
+  --black: #0a0a0a;
+  --white: #ffffff;
+  --indigo: #002ba8;
+  --gray: #e5e5e5;
+  --dark-gray: #555555;
+  --red: #d11f1f;
+  --green: #117b3d;
 }
-*{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--cream);font-family:'DM Sans',system-ui,sans-serif;}
-#app{min-height:100vh;display:flex;flex-direction:column;position:relative;}
-.grid{position:fixed;inset:0;background-image:linear-gradient(rgba(201,162,39,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(201,162,39,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
-.z1{position:relative;z-index:1;}
 
-/* ── INTRO ── */
-.intro{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:2.5rem;text-align:center;}
-.logo-wrap{width:72px;height:72px;background:var(--surface2);border:1px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;position:relative;}
-.logo-wrap::before,.logo-wrap::after{content:'';position:absolute;width:8px;height:8px;border-color:var(--gold);border-style:solid;}
-.logo-wrap::before{top:-1px;left:-1px;border-width:1px 0 0 1px;}
-.logo-wrap::after{bottom:-1px;right:-1px;border-width:0 1px 1px 0;}
-.logo-txt{font-size:22px;font-weight:700;color:var(--gold);font-family:'Playfair Display',serif;}
-.eyebrow{font-size:10px;letter-spacing:0.3em;color:var(--gold-dim);text-transform:uppercase;font-weight:500;margin-bottom:1.25rem;}
-.intro-title{font-size:30px;font-weight:700;color:var(--cream);letter-spacing:-0.5px;font-family:'Playfair Display',serif;margin-bottom:0.25rem;}
-.intro-sub{font-size:11px;letter-spacing:0.2em;color:var(--cream3);text-transform:uppercase;margin-bottom:2rem;}
-.divider{display:flex;align-items:center;gap:12px;width:360px;max-width:100%;margin:0 auto 2rem;}
-.div-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--border-gold),transparent);}
-.div-diamond{width:6px;height:6px;background:var(--gold);transform:rotate(45deg);flex-shrink:0;}
-.dossier{background:var(--surface);border:1px solid var(--border-gold);padding:1.5rem 2rem;max-width:480px;margin:0 auto 2rem;position:relative;}
-.dossier::before{content:'CLASSIFIED DOSSIER';position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:var(--surface);padding:0 10px;font-size:9px;letter-spacing:0.25em;color:var(--gold-dim);font-weight:600;}
-.dossier-item{display:flex;gap:10px;font-size:13px;color:var(--cream2);line-height:1.5;padding:5px 0;border-bottom:1px solid var(--border2);text-align:left;}
-.dossier-item:last-child{border-bottom:none;}
-.dossier-n{font-size:10px;color:var(--gold);font-weight:600;min-width:16px;padding-top:1px;flex-shrink:0;}
-.stats{display:flex;gap:2rem;justify-content:center;margin-top:1.5rem;}
-.stat-val{font-size:22px;font-weight:700;color:var(--gold);font-family:'Playfair Display',serif;}
-.stat-lbl{font-size:10px;color:var(--cream3);letter-spacing:0.12em;text-transform:uppercase;margin-top:2px;}
-.sep{width:1px;background:var(--border-gold);align-self:stretch;}
-.cta{background:var(--gold);color:#080705;border:none;padding:14px 44px;font-size:13px;font-weight:600;cursor:pointer;letter-spacing:0.12em;text-transform:uppercase;font-family:'DM Sans',sans-serif;transition:background 0.2s;margin-top:2rem;}
-.cta:hover:not(:disabled){background:var(--gold-light);}
-.cta:disabled{opacity:0.5;cursor:not-allowed;}
-.err{font-size:12px;color:var(--red);max-width:460px;margin:0.75rem auto 0;border:1px solid rgba(200,64,64,0.3);padding:0.6rem 1rem;background:rgba(200,64,64,0.07);line-height:1.6;word-break:break-word;text-align:left;}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ── SESSION ── */
-.session{display:flex;flex-direction:column;height:100vh;}
-.hdr{background:var(--surface);border-bottom:1px solid var(--border-gold);padding:0.75rem 1.5rem;display:flex;align-items:center;gap:0.875rem;flex-shrink:0;}
-.hdr::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold-dim),transparent);}
-.hdr-logo{width:36px;height:36px;background:var(--surface2);border:1px solid var(--border-gold);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--gold);flex-shrink:0;font-family:'Playfair Display',serif;}
-.hdr-info{flex:1;min-width:0;}
-.hdr-title{font-size:14px;font-weight:600;color:var(--cream);letter-spacing:0.03em;font-family:'Playfair Display',serif;}
-.hdr-sub{font-size:10px;color:var(--cream3);letter-spacing:0.1em;text-transform:uppercase;margin-top:1px;}
-.pill{display:flex;align-items:center;gap:5px;background:var(--surface2);border:1px solid var(--border-gold);padding:4px 10px;flex-shrink:0;}
-.pill-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
-.pill-txt{font-size:10px;color:var(--cream3);letter-spacing:0.08em;white-space:nowrap;}
-.timer-txt{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:0.05em;}
-.prompt-dots{display:flex;gap:3px;align-items:center;}
-.pdot{width:8px;height:8px;border-radius:1px;transition:background 0.3s;}
+body { 
+  background-color: var(--gray); 
+  color: var(--black); 
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
 
-/* ── METER ── */
-.meter{background:var(--surface);border-bottom:1px solid var(--border-gold);padding:0.7rem 1.5rem;flex-shrink:0;}
-.meter-row{display:flex;align-items:center;gap:0.75rem;margin-bottom:4px;}
-.meter-lbl{font-size:9px;font-weight:600;color:var(--cream3);letter-spacing:0.25em;text-transform:uppercase;min-width:130px;}
-.meter-track{flex:1;height:6px;background:var(--surface3);border:1px solid var(--border2);position:relative;overflow:visible;}
-.meter-fill{height:100%;transition:width 0.7s cubic-bezier(.4,0,.2,1),background 0.4s;}
-.meter-marker{position:absolute;top:-8px;font-size:8px;color:var(--cream3);letter-spacing:0.06em;white-space:nowrap;transform:translateX(-50%);pointer-events:none;}
-.meter-pct{font-size:13px;font-weight:700;min-width:36px;text-align:right;font-variant-numeric:tabular-nums;font-family:'Playfair Display',serif;}
-.meter-sub{display:flex;justify-content:space-between;font-size:9px;color:var(--cream4);letter-spacing:0.08em;padding-left:130px;}
+#app {
+  width: 100vw;
+  height: 100vh;
+  padding: 2rem;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-/* ── CHAT ── */
-.chat{flex:1;overflow-y:auto;padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:1rem;}
-.chat::-webkit-scrollbar{width:4px;}
-.chat::-webkit-scrollbar-thumb{background:var(--border-gold);}
-.row{display:flex;gap:0.75rem;align-items:flex-start;}
-.row.user{flex-direction:row-reverse;}
-.av{width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:2px;font-family:'Playfair Display',serif;position:relative;}
-.av.vr{background:var(--surface2);border:1px solid var(--gold-dim);color:var(--gold);}
-.av.vr::before,.av.vr::after{content:'';position:absolute;width:5px;height:5px;border-color:var(--gold);border-style:solid;}
-.av.vr::before{top:-1px;left:-1px;border-width:1px 0 0 1px;}
-.av.vr::after{bottom:-1px;right:-1px;border-width:0 1px 1px 0;}
-.av.tm{background:var(--surface2);border:1px solid var(--border2);color:var(--cream3);}
-.bubble{max-width:72%;}
-.bname{font-size:9px;letter-spacing:0.18em;text-transform:uppercase;font-weight:600;margin-bottom:5px;}
-.bname.vr{color:var(--gold-dim);}
-.bname.tm{color:var(--cream3);}
-.btext{font-size:13.5px;line-height:1.75;padding:0.875rem 1.1rem;border:1px solid;}
-.btext.vr{color:var(--cream);background:var(--surface2);border-color:var(--border-gold);}
-.btext.tm{color:var(--cream2);background:var(--surface);border-color:var(--border2);}
-.signal{font-size:10px;margin-top:5px;display:flex;align-items:center;gap:5px;padding-left:2px;letter-spacing:0.04em;}
-.thinking{font-size:13px;color:var(--cream3);padding:0.75rem 1rem;background:var(--surface2);border:1px solid var(--border-gold);}
-.dots{display:inline-flex;gap:3px;margin-left:4px;}
-.dots span{width:4px;height:4px;border-radius:50%;background:var(--gold-dim);display:inline-block;animation:blink 1.2s infinite;}
-.dots span:nth-child(2){animation-delay:0.2s;}
-.dots span:nth-child(3){animation-delay:0.4s;}
-@keyframes blink{0%,100%{opacity:0.3;}50%{opacity:1;}}
-.err-inline{font-size:12px;color:var(--red);background:rgba(200,64,64,0.07);border:1px solid rgba(200,64,64,0.2);padding:0.6rem 0.9rem;line-height:1.5;word-break:break-word;margin:0.25rem 0;}
-.retry{font-size:11px;color:var(--gold);background:none;border:1px solid var(--gold-dim);padding:5px 12px;cursor:pointer;margin-top:6px;letter-spacing:0.08em;text-transform:uppercase;display:inline-block;}
-.retry:hover{background:var(--gold-faint);}
+h1, h2, h3, h4 { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; }
+button { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; cursor: pointer; }
 
-/* ── INPUT ── */
-.ibar{background:var(--surface);border-top:1px solid var(--border-gold);padding:1rem 1.5rem;flex-shrink:0;}
-.ibar::before{content:'';display:block;height:1px;background:linear-gradient(90deg,transparent,var(--gold-dim),transparent);margin-bottom:1rem;}
-.iwrap{display:flex;gap:0.75rem;align-items:flex-end;}
-.ifield{flex:1;background:var(--surface2);border:1px solid var(--border-gold);padding:0.75rem 1rem;font-size:13.5px;color:var(--cream);resize:none;outline:none;line-height:1.6;font-family:'DM Sans',sans-serif;transition:border-color 0.2s;}
-.ifield:focus{border-color:var(--gold-dim);}
-.ifield::placeholder{color:var(--cream4);}
-.isend{background:var(--gold);color:#080705;border:none;padding:0.875rem 1.25rem;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;letter-spacing:0.12em;text-transform:uppercase;font-family:'DM Sans',sans-serif;transition:background 0.2s;}
-.isend:hover:not(:disabled){background:var(--gold-light);}
-.isend:disabled{opacity:0.4;cursor:not-allowed;}
-.ihint{font-size:10px;color:var(--cream4);margin-top:6px;letter-spacing:0.05em;}
-.submitted{text-align:center;font-size:12px;color:var(--cream3);padding:0.5rem;letter-spacing:0.1em;text-transform:uppercase;}
+/* ── DOCUMENT CONTAINER ── */
+.document {
+  background-color: var(--white);
+  border: 1px solid var(--black);
+  width: 100%;
+  max-width: 960px;
+  height: 100%;
+  box-shadow: 12px 12px 0px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
 
-/* ── VERDICT ── */
-.verdict{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:2.5rem;text-align:center;}
-.vseal{width:80px;height:80px;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 1.5rem;}
-.vtitle{font-size:28px;font-weight:700;font-family:'Playfair Display',serif;letter-spacing:-0.5px;margin-bottom:0.5rem;}
-.vquote{font-size:14px;font-style:italic;line-height:1.7;max-width:460px;margin:1.5rem auto;padding:1.5rem 1.5rem 1.5rem 2.5rem;border:1px solid;position:relative;text-align:left;}
-.vquote::before{content:'\201C';font-size:48px;position:absolute;top:-10px;left:12px;font-family:'Playfair Display',serif;line-height:1;}
-.vstats{display:flex;gap:2.5rem;justify-content:center;margin:1.5rem 0;}
-.vstat-val{font-size:28px;font-weight:700;font-family:'Playfair Display',serif;}
-.vstat-lbl{font-size:10px;letter-spacing:0.15em;text-transform:uppercase;margin-top:3px;color:var(--cream3);}
-.vnote{font-size:11px;color:var(--cream4);letter-spacing:0.06em;}
+.t-border { border-top: 1px solid var(--black); }
+.b-border { border-bottom: 1px solid var(--black); }
+.r-border { border-right: 1px solid var(--black); }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(229, 229, 229, 0.85);
+  backdrop-filter: blur(2px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 100;
+  opacity: 0; animation: fadeInModal 0.2s forwards;
+  padding: 1rem;
+}
+@keyframes fadeInModal { to { opacity: 1; } }
+
+.modal-box {
+  background: var(--white);
+  border: 3px solid var(--black);
+  max-width: 480px; width: 100%;
+  padding: 32px;
+  box-shadow: 12px 12px 0px rgba(0,0,0,1);
+  transform: translateY(20px); 
+  animation: dropIn 0.3s 0.1s cubic-bezier(0.17, 0.84, 0.44, 1) forwards; 
+  opacity: 0;
+}
+@keyframes dropIn { to { opacity: 1; transform: translateY(0); } }
+
+.modal-title { font-size: 22px; font-weight: 800; text-transform: uppercase; border-bottom: 2px solid var(--black); padding-bottom: 12px; margin-bottom: 20px; }
+.modal-rules { font-size: 14px; line-height: 1.6; color: var(--black); }
+.modal-rules ul { padding-left: 24px; margin: 16px 0 24px 0; }
+.modal-rules li { margin-bottom: 10px; font-weight: 500; }
+.modal-rules strong { color: var(--indigo); font-weight: 800; }
+.btn-acknowledge { background: var(--black); color: var(--white); border: none; padding: 16px; font-size: 14px; font-weight: 700; cursor: pointer; text-transform: uppercase; width: 100%; transition: background 0.2s;}
+.btn-acknowledge:hover { background: var(--indigo); color: var(--white); }
+
+/* ── HEADER ── */
+.doc-header { display: flex; align-items: stretch; background: var(--white); flex-shrink: 0; }
+.seal { width: 80px; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 600; color: var(--indigo); background: var(--white); }
+.title-area { flex: 1; padding: 16px 24px; display: flex; flex-direction: column; justify-content: center; }
+.title-main { font-size: 24px; font-weight: 800; text-transform: uppercase; letter-spacing: -0.5px; }
+.title-sub { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--dark-gray); margin-top: 4px; }
+.meta-area { display: flex; flex-direction: column; min-width: 200px; }
+.meta-row { flex: 1; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; font-family: 'Courier Prime', monospace; font-size: 12px; font-weight: 700; }
+.meta-row.warning { color: var(--red); }
+
+/* ── PROGRESS BAR ── */
+.meter-container { padding: 16px; background: #f9f9f9; flex-shrink: 0; }
+.meter-lbl { display: flex; justify-content: space-between; font-size: 10px; text-transform: uppercase; font-weight: 700; margin-bottom: 8px; }
+.meter-track { height: 12px; border: 1px solid var(--black); background: var(--white); position: relative; }
+.meter-fill { height: 100%; background: var(--black); transition: width 0.3s; }
+.meter-target { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--indigo); z-index: 2; }
+
+/* ── TRANSCRIPT AREA ── */
+.transcript-area { flex: 1; overflow-y: auto; padding: 0; display: flex; flex-direction: column; background: var(--white); }
+.transcript-area::-webkit-scrollbar { width: 8px; }
+.transcript-area::-webkit-scrollbar-thumb { background: var(--black); }
+
+.log-entry { display: flex; border-bottom: 1px solid var(--black); }
+.log-entry.board { background-color: #f6f6f6; }
+.log-entry:last-child { border-bottom: none; }
+.log-sidebar { width: 150px; padding: 16px; font-family: 'Courier Prime', monospace; font-size: 11px; flex-shrink: 0; border-right: 1px solid var(--black); display: flex; flex-direction: column; justify-content: flex-start; }
+.speaker-name { font-weight: 700; margin-bottom: 8px; text-transform: uppercase; }
+.speaker-time { color: var(--dark-gray); }
+.speaker-delta { margin-top: 12px; font-weight: 700; padding-top: 12px; border-top: 1px dotted #ccc; }
+.speaker-reason { font-size: 9px; margin-top: 4px; color: var(--dark-gray); line-height: 1.3; }
+
+.log-content { flex: 1; padding: 20px 24px; }
+.log-text { font-family: 'Playfair Display', serif; font-size: 16px; line-height: 1.6; color: var(--black); }
+.log-text.user { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; }
+.typing-cursor { display: inline-block; width: 8px; height: 1em; background: var(--black); vertical-align: middle; margin-left: 2px; animation: blink 1s step-end infinite; }
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+/* ── INPUT FORM ── */
+.input-section { flex-shrink: 0; background: var(--white); }
+.input-textarea { width: 100%; border: none; padding: 16px 24px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; resize: none; outline: none; min-height: 80px; }
+.input-textarea:focus { background: #fafafa; }
+.input-footer { display: flex; justify-content: space-between; align-items: center; padding: 0; background: var(--black); }
+.input-info { color: var(--white); font-family: 'Courier Prime', monospace; font-size: 11px; padding: 0 16px; text-transform: uppercase; }
+.btn-submit { background: var(--indigo); color: var(--white); border: none; padding: 12px 32px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; border-left: 1px solid var(--black); }
+.btn-submit:hover:not(:disabled) { background: #001f7a; }
+.btn-submit:disabled { background: #333; color: #888; cursor: not-allowed; }
+
+/* ── COVER SHEET & VERDICT ── */
+.cover-sheet { padding: 40px; display: flex; flex-direction: column; justify-content: center; height: 100%; overflow-y: auto; }
+.cover-title { font-size: 48px; font-family: 'Playfair Display', serif; font-weight: 600; line-height: 1.1; margin-bottom: 16px; }
+.cover-sub { font-size: 14px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em; color: var(--indigo); margin-bottom: 48px; }
+.dossier-table { width: 100%; border-collapse: collapse; margin-bottom: 48px; font-family: 'Courier Prime', monospace; font-size: 13px; }
+.dossier-table td, .dossier-table th { border: 1px solid var(--black); padding: 12px 16px; text-align: left; }
+.dossier-table th { background: var(--black); color: var(--white); text-transform: uppercase; width: 140px; font-weight: 700;}
+.btn-large { background: var(--black); color: var(--white); padding: 16px 32px; font-size: 14px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.1em; border: none; align-self: flex-start; }
+.btn-large:hover { background: var(--indigo); }
+
+.verdict-stamp { display: inline-block; font-family: 'Courier Prime', monospace; font-size: 48px; font-weight: 700; text-transform: uppercase; padding: 12px 24px; border: 4px solid; margin-bottom: 32px; transform: rotate(-2deg); }
+.verdict-stamp.pass { color: var(--green); border-color: var(--green); }
+.verdict-stamp.fail { color: var(--red); border-color: var(--red); }
+
+/* ── MOBILE RESPONSIVENESS ── */
+@media (max-width: 768px) {
+  #app { padding: 0; }
+  .document { 
+    max-width: 100%; 
+    width: 100%; 
+    height: 100%;
+    box-shadow: none; 
+    border: none; 
+  }
+  
+  /* Header */
+  .doc-header { flex-direction: column; }
+  .seal { display: none; }
+  .title-area { border-right: none; border-bottom: 1px solid var(--black); padding: 16px; }
+  .title-main { font-size: 20px; }
+  .meta-area { min-width: 100%; }
+  .meta-row { padding: 12px 16px; border-bottom: 1px solid #ddd; }
+  .meta-row.b-border { border-bottom: 1px solid #ddd; }
+
+  /* Transcript layout */
+  .log-entry { flex-direction: column; }
+  .log-sidebar { 
+    width: 100%; 
+    border-right: none; 
+    border-bottom: 1px solid #ccc;
+    padding: 12px 16px; 
+    flex-direction: row; 
+    align-items: flex-start; 
+    justify-content: space-between; 
+  }
+  .speaker-info-wrap { display: flex; flex-direction: column; }
+  .speaker-score-wrap { display: flex; flex-direction: column; align-items: flex-end; text-align: right; }
+  .speaker-delta { margin-top: 0; padding-top: 0; border-top: none; }
+  .speaker-reason { max-width: 140px; margin-top: 4px; font-size: 9px; }
+  .log-content { padding: 16px; }
+
+  /* Input area */
+  .input-footer { flex-direction: column; align-items: stretch; }
+  .input-info { padding: 12px; text-align: center; border-bottom: 1px solid var(--black); }
+  .btn-submit { border-left: none; padding: 16px; }
+
+  /* Modals and Cover */
+  .cover-sheet { padding: 24px; justify-content: flex-start; }
+  .cover-title { font-size: 32px; margin-top: 16px; }
+  .dossier-table, .dossier-table tbody, .dossier-table tr, .dossier-table th, .dossier-table td { display: block; width: 100%; }
+  .dossier-table th { padding-bottom: 8px; border-bottom: none; }
+  .dossier-table td { border-top: none; }
+  .modal-box { padding: 24px; }
+  .modal-title { font-size: 18px; }
+  .modal-rules { font-size: 13px; }
+}
 </style>
 </head>
 <body>
@@ -137,98 +216,33 @@ body{background:var(--bg);color:var(--cream);font-family:'DM Sans',system-ui,san
 const { useState, useEffect, useRef, useCallback } = React;
 const e = React.createElement;
 
-// ─────────────────────────────────────────────
-// CONSTANTS
-// ─────────────────────────────────────────────
 const MAX_PROMPTS = 7;
 const SESSION_SECS = 25 * 60;
-const APPROVAL_THRESHOLD = 62; // percent
+const APPROVAL_THRESHOLD = 62;
 const MAX_SCORE = MAX_PROMPTS * 15;
 
-const APPROVAL_LINES = [
-  "Strategy approved. You demonstrated the rigour this board demands. Don't make me regret it.",
-  "The board votes in favour. Reluctantly impressed. Quarterly reviews will be merciless — execute accordingly.",
-  "Proposal approved. Sharp thinking, well-structured. Now move before Air India does.",
-  "You've earned your runway. The board approves. Remember — aviation punishes hesitation."
-];
-const REJECT_LINES = [
-  "This is precisely how airlines go bankrupt. Return with numbers, not narratives. Rejected.",
-  "IndiGo didn't dominate Indian aviation on half-formed strategy. Hard pass. Do your homework.",
-  "I've heard more rigorous pitches from MBA interns. This proposal is rejected.",
-  "We needed a turnaround plan. You delivered a mood board. Rejected."
-];
-const MOOD_COLORS = { skeptical:"#c84040", neutral:"#8a7a5a", interested:"#c89030", impressed:"#3ab878" };
-const MOOD_LABELS = { skeptical:"Skeptical", neutral:"Neutral", interested:"Interested", impressed:"Impressed" };
+const APPROVAL_LINES = ["Strategy approved. You demonstrated the rigour this board demands.", "The board votes in favour. Quarterly reviews will be merciless.", "Proposal approved. Execute accordingly."];
+const REJECT_LINES = ["This is precisely how airlines go bankrupt. Rejected.", "Hard pass. Return with numbers, not narratives.", "I've heard more rigorous pitches from interns. Rejected."];
 
-// ─────────────────────────────────────────────
-// API CALL — uses the server proxy at /api/chat
-// The API key stays on the server, never exposed
-// ─────────────────────────────────────────────
 async function callAPI(history, dossier) {
-  const res = await fetch("/api/chat", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ messages: history, dossier })
-  });
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}));
-    throw new Error(data.error || `Server error ${res.status}`);
-  }
+  const res = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ messages: history, dossier }) });
+  if (!res.ok) throw new Error("API Error");
   const data = await res.json();
-  if (!data.raw) throw new Error("Empty response from server");
   return data.raw;
 }
 
-// ─────────────────────────────────────────────
-// JSON EXTRACTION — multiple fallback strategies
-// ─────────────────────────────────────────────
 function parseBoard(raw) {
   if (!raw || typeof raw !== "string") return null;
-
-  // 1. Clean and try direct parse
   const clean = raw.trim().replace(/^```json\s*/i, "").replace(/^```/, "").replace(/```$/, "").trim();
   try { const p = JSON.parse(clean); if (p.boardResponse) return p; } catch(_) {}
-
-  // 2. Extract outermost { } block
-  const start = clean.indexOf("{");
-  const end = clean.lastIndexOf("}");
-  if (start !== -1 && end > start) {
-    try { const p = JSON.parse(clean.slice(start, end + 1)); if (p.boardResponse) return p; } catch(_) {}
-  }
-
-  // 3. Field-level regex — handles escaped quotes and newlines inside the string
-  const mText = clean.match(/"boardResponse"\s*:\s*"((?:[^"\\]|\\[\s\S])*)"/);
-  if (mText) {
-    const mDelta = clean.match(/"convictionDelta"\s*:\s*(\d+)/);
-    const mMood  = clean.match(/"boardMood"\s*:\s*"(skeptical|neutral|interested|impressed)"/);
-    return {
-      boardResponse: mText[1].replace(/\\n/g, "\n").replace(/\\"/g, '"').replace(/\\'/g, "'"),
-      convictionDelta: mDelta ? parseInt(mDelta[1], 10) : 0,
-      boardMood: mMood ? mMood[1] : "skeptical"
-    };
-  }
-
-  // 4. Model ignored format — treat entire output as the board response
-  if (clean.length > 20) {
-    return { boardResponse: clean, convictionDelta: 0, boardMood: "skeptical" };
-  }
-
-  return null;
+  const start = clean.indexOf("{"), end = clean.lastIndexOf("}");
+  if (start !== -1 && end > start) { try { const p = JSON.parse(clean.slice(start, end + 1)); if (p.boardResponse) return p; } catch(_) {} }
+  return { boardResponse: clean, convictionDelta: 0, boardMood: "skeptical" }; 
 }
 
-// ─────────────────────────────────────────────
-// HELPERS
-// ─────────────────────────────────────────────
 const fmtTime = s => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
-const pick = arr => arr[Math.floor(Math.random() * arr.length)];
-const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
-const meterColor = pct => pct < 30 ? "#c84040" : pct < 55 ? "#c87020" : pct < APPROVAL_THRESHOLD ? "#c9a227" : "#3ab878";
 const signalLabel = d => d > 10 ? "Strong argument — conviction gained" : d > 6 ? "Sound argument" : d > 3 ? "Weak argument — insufficient evidence" : "Unconvincing — no material conviction gained";
-const signalColor = d => d > 10 ? "#3ab878" : d > 6 ? "#c9a227" : d > 3 ? "#c87020" : "#c84040";
 
-// ─────────────────────────────────────────────
-// MAIN COMPONENT
-// ─────────────────────────────────────────────
 function BoardSession() {
   const [dossierStats] = useState(() => ({
     atf: Math.floor(Math.random() * 23) + 22,
@@ -236,350 +250,256 @@ function BoardSession() {
     otpStart: Math.floor(Math.random() * 7) + 80,
     otpEnd: Math.floor(Math.random() * 11) + 61,
     npsDrop: Math.floor(Math.random() * 15) + 14,
-    stockDrop: Math.floor(Math.random() * 15) + 12,
-    curveballIndex: Math.floor(Math.random() * 6)
+    stockDrop: Math.floor(Math.random() * 15) + 12
   }));
 
-  // Single source of truth for phase: "intro" | "loading" | "active" | "ended"
-  const [phase, setPhase]         = useState("intro");
-  const [messages, setMessages]   = useState([]);  // {role, text, mood?, delta?}
-  const [input, setInput]         = useState("");
-  const [score, setScore]         = useState(0);
-  const [mood, setMood]           = useState("skeptical");
+  const [phase, setPhase] = useState("intro"); 
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState("");
+  const [score, setScore] = useState(0);
   const [promptsLeft, setPromptsLeft] = useState(MAX_PROMPTS);
-  const [timeLeft, setTimeLeft]   = useState(SESSION_SECS);
-  const [thinking, setThinking]   = useState(false);
+  const [timeLeft, setTimeLeft] = useState(SESSION_SECS);
+  
+  const [thinking, setThinking] = useState(false);
   const [typingText, setTypingText] = useState("");
-  const [verdict, setVerdict]     = useState(null);   // {approved, line}
-  const [error, setError]         = useState(null);
-  const [lastMsg, setLastMsg]     = useState(null);   // for retry
+  const [typingDelta, setTypingDelta] = useState(null);
+  const [verdict, setVerdict] = useState(null);
 
-  // Refs that don't need to trigger re-renders
-  const historyRef    = useRef([]);   // clean conversation history for API
-  const scoreRef      = useRef(0);    // always in sync with score state
-  const promptsRef    = useRef(MAX_PROMPTS); // always in sync with promptsLeft state
-  const typingTimer   = useRef(null);
-  const sessionTimer  = useRef(null);
-  const bottomRef     = useRef(null);
-  const inputRef      = useRef(null);
-  const isSending     = useRef(false); // prevent double-send
+  const historyRef = useRef([]);
+  const scoreRef = useRef(0);
+  const promptsRef = useRef(MAX_PROMPTS);
+  const timers = useRef({ session: null, typing: null });
+  const bottomRef = useRef(null);
+  const inputRef = useRef(null);
 
-  // Keep refs in sync
-  useEffect(() => { scoreRef.current = score; }, [score]);
-  useEffect(() => { promptsRef.current = promptsLeft; }, [promptsLeft]);
+  useEffect(() => { scoreRef.current = score; promptsRef.current = promptsLeft; }, [score, promptsLeft]);
+  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, thinking, typingText]);
+  useEffect(() => () => { clearInterval(timers.current.session); clearInterval(timers.current.typing); }, []);
 
-  // Auto-scroll
-  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, typingText, error]);
-
-  // Cleanup on unmount
-  useEffect(() => () => {
-    clearInterval(sessionTimer.current);
-    clearInterval(typingTimer.current);
-  }, []);
-
-  // ── Session timer ──
-  const startTimer = useCallback(() => {
-    clearInterval(sessionTimer.current);
-    sessionTimer.current = setInterval(() => {
-      setTimeLeft(t => {
-        if (t <= 1) {
-          clearInterval(sessionTimer.current);
-          // Use refs so closure has fresh values
-          concludeSession(scoreRef.current);
-          return 0;
-        }
-        return t - 1;
-      });
-    }, 1000);
-  }, []);
-
-  // ── Typing animation ──
-  const animateTyping = useCallback((text, onComplete) => {
-    clearInterval(typingTimer.current);
-    let i = 0;
-    setTypingText("");
-    typingTimer.current = setInterval(() => {
-      i++;
-      setTypingText(text.slice(0, i));
-      if (i >= text.length) {
-        clearInterval(typingTimer.current);
-        setTypingText("");
-        onComplete(text);
-      }
-    }, 11);
-  }, []);
-
-  // ── Conclude session ──
   const concludeSession = useCallback((finalScore) => {
-    clearInterval(sessionTimer.current);
-    clearInterval(typingTimer.current);
+    clearInterval(timers.current.session);
+    clearInterval(timers.current.typing);
     const pct = Math.min(100, Math.round((finalScore / MAX_SCORE) * 100));
-    const approved = pct >= APPROVAL_THRESHOLD;
-    setVerdict({ approved, line: pick(approved ? APPROVAL_LINES : REJECT_LINES) });
+    setVerdict({ approved: pct >= APPROVAL_THRESHOLD, line: pct >= APPROVAL_THRESHOLD ? APPROVAL_LINES[0] : REJECT_LINES[0], pct });
     setPhase("ended");
   }, []);
 
-  // ── Process a board response and add to chat ──
-  const processBoardReply = useCallback((raw, newPromptsLeft, newScore) => {
-    const parsed = parseBoard(raw);
-    if (!parsed) {
-      setError("Could not parse board response. Raw: " + raw.slice(0, 120));
-      isSending.current = false;
-      return;
-    }
+  const startTimer = useCallback(() => {
+    clearInterval(timers.current.session);
+    timers.current.session = setInterval(() => {
+      setTimeLeft(t => {
+        if (t <= 1) { concludeSession(scoreRef.current); return 0; }
+        return t - 1;
+      });
+    }, 1000);
+  }, [concludeSession]);
 
-    const delta = clamp(typeof parsed.convictionDelta === "number" ? parsed.convictionDelta : 0, 0, 15);
-    const updatedScore = Math.min(MAX_SCORE, newScore + delta);
-    setScore(updatedScore);
-    scoreRef.current = updatedScore;
-    setMood(parsed.boardMood || "neutral");
+  const animateTyping = useCallback((text, delta, onComplete) => {
+    clearInterval(timers.current.typing);
+    let i = 0; 
+    setTypingText(""); 
+    setTypingDelta(delta);
+    
+    timers.current.typing = setInterval(() => {
+      i += 2; 
+      if (i > text.length) i = text.length;
+      setTypingText(text.slice(0, i));
 
-    animateTyping(parsed.boardResponse, (text) => {
-      setMessages(prev => [...prev, {
-        role: "board",
-        text,
-        mood: parsed.boardMood,
-        delta: delta
-      }]);
-      isSending.current = false;
-      if (newPromptsLeft <= 0) {
-        setTimeout(() => concludeSession(updatedScore), 1500);
-      } else {
-        inputRef.current?.focus();
+      bottomRef.current?.scrollIntoView({ behavior: "auto" });
+
+      if (i >= text.length) { 
+        clearInterval(timers.current.typing); 
+        setTypingText(""); 
+        setTypingDelta(null);
+        onComplete(text); 
       }
+    }, 15);
+  }, []);
+
+  const processResponse = useCallback((raw, usedPrompts, currentScore) => {
+    const parsed = parseBoard(raw);
+    if (!parsed) return setThinking(false);
+
+    const delta = Math.max(0, Math.min(15, parsed.convictionDelta || 0));
+    const newScore = Math.min(MAX_SCORE, currentScore + delta);
+    setScore(newScore); scoreRef.current = newScore;
+    const tz = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    
+    animateTyping(parsed.boardResponse, delta, (completedText) => {
+      setMessages(p => [...p, { role: "board", text: completedText, delta, time: tz }]);
+      if (usedPrompts <= 0) setTimeout(() => concludeSession(newScore), 1500);
+      else setTimeout(() => inputRef.current?.focus(), 100);
     });
+
   }, [animateTyping, concludeSession]);
 
-  // ── Start session ──
-  const handleStart = useCallback(async () => {
-    if (phase !== "intro") return;
-    setPhase("loading");
-    setError(null);
-    historyRef.current = [];
+  const initiateBriefing = () => {
+    setPhase("rules_wait");
+    setTimeout(() => {
+      setPhase("rules");
+    }, 1000);
+  };
 
+  const AcceptRulesAndConnect = async () => {
+    setPhase("active_loading");
     try {
-      historyRef.current = [{ role: "user", content: "Begin the board session." }];
+      historyRef.current = [{ role: "user", content: "Begin." }];
       const raw = await callAPI(historyRef.current, dossierStats);
       historyRef.current.push({ role: "assistant", content: raw });
-
       const parsed = parseBoard(raw);
-      if (!parsed) throw new Error("Could not parse opener. Raw: " + raw.slice(0, 120));
-
-      setMood(parsed.boardMood || "skeptical");
-      setPhase("active");
+      
+      setPhase("active"); 
       startTimer();
-
-      animateTyping(parsed.boardResponse, (text) => {
-        setMessages([{ role: "board", text, mood: parsed.boardMood, delta: null }]);
-        inputRef.current?.focus();
+      const textToType = parsed?.boardResponse || "Begin.";
+      animateTyping(textToType, null, (completedText) => {
+        setMessages([{ role: "board", text: completedText, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }]);
+        setTimeout(() => inputRef.current?.focus(), 100);
       });
-    } catch (err) {
-      historyRef.current = [];
-      setPhase("intro");
-      setError(err.message);
-    }
-  }, [phase, animateTyping, startTimer]);
+    } catch (e) { alert("Error connecting to server."); setPhase("intro"); }
+  };
 
-  // ── Send a user message ──
-  const handleSend = useCallback(async (overrideText) => {
-    const text = (overrideText || input).trim();
-    if (!text || isSending.current || thinking || typingText || promptsRef.current <= 0 || phase !== "active") return;
-
-    isSending.current = true;
-    setInput("");
-    setError(null);
-    setLastMsg(text);
-
-    // Decrement prompts
-    const newPromptsLeft = promptsRef.current - 1;
-    setPromptsLeft(newPromptsLeft);
-    promptsRef.current = newPromptsLeft;
-
-    // Add user message to UI
-    setMessages(prev => [...prev, { role: "user", text }]);
-    setThinking(true);
-
-    // Build history snapshot for this call
-    const callHistory = [...historyRef.current, { role: "user", content: text }];
-
+  const handleSend = async () => {
+    const txt = input.trim();
+    if (!txt || thinking || typingText || promptsRef.current <= 0) return;
+    setInput(""); setThinking(true);
+    
+    const newPLeft = promptsRef.current - 1;
+    setPromptsLeft(newPLeft); promptsRef.current = newPLeft;
+    const tz = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    setMessages(p => [...p, { role: "user", text: txt, time: tz }]);
+    
+    const snap = [...historyRef.current, { role: "user", content: txt }];
     try {
-      const raw = await callAPI(callHistory, dossierStats);
-      // Only commit to historyRef after success
-      historyRef.current = [...callHistory, { role: "assistant", content: raw }];
+      const raw = await callAPI(snap, dossierStats);
+      historyRef.current = [...snap, { role: "assistant", content: raw }];
       setThinking(false);
-      processBoardReply(raw, newPromptsLeft, scoreRef.current);
-    } catch (err) {
-      // Roll back: restore prompt, remove user message from UI
-      setThinking(false);
-      setPromptsLeft(p => p + 1);
-      promptsRef.current = newPromptsLeft + 1;
-      setMessages(prev => prev.slice(0, -1)); // remove the optimistically added user msg
-      setError(err.message);
-      isSending.current = false;
+      processResponse(raw, newPLeft, scoreRef.current);
+    } catch (e) {
+      setThinking(false); setPromptsLeft(p => p + 1); setMessages(p => p.slice(0, -1));
     }
-  }, [input, thinking, typingText, phase, processBoardReply]);
+  };
 
-  // ── Retry ──
-  const handleRetry = useCallback(() => {
-    if (!lastMsg) return;
-    setError(null);
-    handleSend(lastMsg);
-  }, [lastMsg, handleSend]);
+  if (phase === "intro") return e("div", {className:"document"},
+    e("div", {className:"cover-sheet"},
+      e("h1", {className:"cover-title"}, "Strategic Operations\nBoard Review"),
+      e("div", {className:"cover-sub"}, "Confidential Document // IndiGo Airlines"),
+      e("table", {className:"dossier-table"}, e("tbody", null,
+        e("tr", null, e("th", null, "Fuel Alert"), e("td", null, `ATF costs +${dossierStats.atf}% (severe ASK impact)`)),
+        e("tr", null, e("th", null, "Fleet Status"), e("td", null, `${dossierStats.acGrounded} A320neos grounded (P&W inspections)`)),
+        e("tr", null, e("th", null, "OTP Index"), e("td", null, `Collapsed to ${dossierStats.otpEnd}% (DGCA Notices issued)`))
+      )),
+      e("button", {className:"btn-large", onClick:initiateBriefing}, "Initiate Briefing")
+    )
+  );
 
-  // ─────────────────────────────────────────────
-  // RENDER
-  // ─────────────────────────────────────────────
+  if (phase === "ended" && verdict) return e("div", {className:"document"},
+    e("div", {className:"cover-sheet"},
+      e("div", {className:`verdict-stamp ${verdict.approved?'pass':'fail'}`}, verdict.approved ? "APPROVED" : "REJECTED"),
+      e("h1", {className:"cover-title"}, "Final Board Ruling"),
+      e("div", {className:"cover-sub", style:{marginBottom:'16px'}}, "Executive Director: Vikram Rao"),
+      e("p", {style:{fontFamily:"'Playfair Display'", fontSize:'18px', marginBottom:'32px'}}, verdict.line),
+      e("div", {style:{fontFamily:"'Courier Prime'", fontSize:'14px'}}, `Final Conviction: ${verdict.pct}% // Threshold: ${APPROVAL_THRESHOLD}%`)
+    )
+  );
+
   const pct = Math.min(100, Math.round((score / MAX_SCORE) * 100));
-  const mc = meterColor(pct);
-  const moodColor = MOOD_COLORS[mood] || "#8a7a5a";
-  const timerWarn = timeLeft < 300;
 
-  // ── INTRO / LOADING ──
-  if (phase === "intro" || phase === "loading") {
-    return e("div", { className: "intro z1" },
-      e("div", { className: "grid" }),
-      e("div", { className: "eyebrow" }, "IndiGo Airlines · Strategy Division · Classified"),
-      e("div", { className: "logo-wrap" }, e("div", { className: "logo-txt" }, "IG")),
-      e("h1", { className: "intro-title" }, "Board Strategy Session"),
-      e("p", { className: "intro-sub" }, "Vikram Rao, Executive Director"),
-      e("div", { className: "divider" }, e("div", { className: "div-line" }), e("div", { className: "div-diamond" }), e("div", { className: "div-line" })),
-      e("div", { className: "dossier" },
-        [`ATF fuel costs +${dossierStats.atf}% · cost per ASK deteriorating`,
-         `Air India 470-aircraft order threatens all routes`,
-         `${dossierStats.acGrounded} aircraft grounded pending mandatory GTF inspections`,
-         `OTP collapsed ${dossierStats.otpStart}%→${dossierStats.otpEnd}% — DGCA notices filed`,
-         `NPS down ${dossierStats.npsDrop} pts · stock down ${dossierStats.stockDrop}% YTD`
-        ].map((item, i) =>
-          e("div", { key: i, className: "dossier-item" }, e("span", { className: "dossier-n" }, i + 1), e("span", null, item))
-        )
-      ),
-      error && e("div", { className: "err" }, e("strong", null, "Connection error: "), error),
-      e("div", { className: "stats" },
-        e("div", null, e("div", { className: "stat-val" }, "7"), e("div", { className: "stat-lbl" }, "Prompts")),
-        e("div", { className: "sep" }),
-        e("div", null, e("div", { className: "stat-val" }, "25"), e("div", { className: "stat-lbl" }, "Minutes")),
-        e("div", { className: "sep" }),
-        e("div", null, e("div", { className: "stat-val" }, APPROVAL_THRESHOLD + "%"), e("div", { className: "stat-lbl" }, "To Approve"))
-      ),
-      e("button", { className: "cta", onClick: handleStart, disabled: phase === "loading" },
-        phase === "loading" ? "Convening the Board..." : "Enter the Boardroom"
-      )
-    );
-  }
-
-  // ── VERDICT ──
-  if (phase === "ended" && verdict) {
-    const vc = verdict.approved ? "var(--gold)" : "var(--red)";
-    return e("div", { className: "verdict z1" },
-      e("div", { className: "grid" }),
-      e("div", { className: "vseal", style: { borderColor: vc, color: vc } }, verdict.approved ? "✓" : "✗"),
-      e("div", { className: "divider", style: { width: 320, margin: "0 auto 1.25rem" } },
-        e("div", { className: "div-line" }), e("div", { className: "div-diamond", style: { background: vc } }), e("div", { className: "div-line" })
-      ),
-      e("h1", { className: "vtitle", style: { color: vc } }, verdict.approved ? "Strategy Approved" : "Proposal Rejected"),
-      e("div", { className: "vquote", style: { borderColor: verdict.approved ? "var(--border-gold)" : "#3a1010", background: verdict.approved ? "var(--surface)" : "#0f0808", color: verdict.approved ? "var(--cream2)" : "#c89898" } }, verdict.line),
-      e("div", { className: "vstats" },
-        e("div", null, e("div", { className: "vstat-val", style: { color: vc } }, pct + "%"), e("div", { className: "vstat-lbl" }, "Conviction")),
-        e("div", { className: "sep" }),
-        e("div", null, e("div", { className: "vstat-val", style: { color: "var(--gold)" } }, MAX_PROMPTS - promptsLeft), e("div", { className: "vstat-lbl" }, "Prompts Used")),
-        e("div", { className: "sep" }),
-        e("div", null, e("div", { className: "vstat-val", style: { color: "var(--cream2)" } }, fmtTime(SESSION_SECS - timeLeft)), e("div", { className: "vstat-lbl" }, "Time Elapsed"))
-      ),
-      e("p", { className: "vnote" }, "Approval threshold · " + APPROVAL_THRESHOLD + "% conviction · Maximum attainable · 100%")
-    );
-  }
-
-  // ── ACTIVE SESSION ──
-  return e("div", { className: "session z1" },
-    e("div", { className: "grid" }),
-
-    // Header
-    e("div", { className: "hdr" },
-      e("div", { className: "hdr-logo" }, "IG"),
-      e("div", { className: "hdr-info" },
-        e("div", { className: "hdr-title" }, "IndiGo Board Session"),
-        e("div", { className: "hdr-sub" }, "Vikram Rao · Executive Director")
-      ),
-      e("div", { className: "pill" }, e("div", { className: "pill-dot", style: { background: moodColor } }), e("span", { className: "pill-txt" }, "Board: " + (MOOD_LABELS[mood] || "Neutral"))),
-      e("div", { className: "pill", style: { borderColor: timerWarn ? "#5a1a1a" : "var(--border-gold)" } },
-        e("span", { className: "timer-txt", style: { color: timerWarn ? "var(--red)" : "var(--cream2)" } }, fmtTime(timeLeft))
-      ),
-      e("div", { className: "prompt-dots" },
-        Array.from({ length: MAX_PROMPTS }).map((_, i) =>
-          e("div", { key: i, className: "pdot", style: { background: i < MAX_PROMPTS - promptsLeft ? "var(--gold)" : i === MAX_PROMPTS - promptsLeft ? "var(--gold-dim)" : "var(--border-gold)" } })
-        )
-      ),
-      e("span", { className: "pill-txt", style: { flexShrink: 0 } }, promptsLeft + " remaining")
-    ),
-
-    // Convince-O-Meter
-    e("div", { className: "meter" },
-      e("div", { className: "meter-row" },
-        e("span", { className: "meter-lbl" }, "Convince-O-Meter"),
-        e("div", { className: "meter-track" },
-          e("div", { className: "meter-fill", style: { width: pct + "%", background: mc } }),
-          e("div", { className: "meter-marker", style: { left: APPROVAL_THRESHOLD + "%" } }, "▼ " + APPROVAL_THRESHOLD + "%")
+  return e("div", {className:"document"},
+    
+    phase === "rules" && e("div", {className:"modal-overlay"},
+      e("div", {className:"modal-box"},
+        e("div", {className:"modal-title"}, "Rules of Engagement"),
+        e("div", {className:"modal-rules"},
+          e("p", null, "You are entering a high-stakes board negotiation with Vikram Rao, Executive Director of IndiGo."),
+          e("ul", null,
+            e("li", null, "You have exactly ", e("strong", null, "25 minutes"), " on the clock."),
+            e("li", null, "You are limited to ", e("strong", null, "7 prompts"), ". Make every word count."),
+            e("li", null, "Solid arguments grant conviction points. Vague buzzwords grant nothing."),
+            e("li", null, "Your goal: Fill the Convince-O-Meter to ", e("strong", null, APPROVAL_THRESHOLD + "%"), " before time or prompts run out.")
+          ),
+          e("p", {style:{fontStyle:'italic', color:'var(--dark-gray)', fontSize:'12px'}}, "Warning: The board may throw unexpected operational curveballs during the meeting.")
         ),
-        e("span", { className: "meter-pct", style: { color: mc } }, pct + "%")
-      ),
-      e("div", { className: "meter-sub" }, e("span", null, "No Conviction"), e("span", { style: { color: "var(--cream3)" } }, "Approval Zone →"), e("span", null, "Full Conviction"))
+        e("button", {className:"btn-acknowledge", onClick: AcceptRulesAndConnect }, "Acknowledge & Connect")
+      )
     ),
 
-    // Chat messages
-    e("div", { className: "chat" },
-      messages.map((m, i) =>
-        e("div", { key: i, className: "row " + (m.role === "user" ? "user" : "") },
-          e("div", { className: "av " + (m.role === "board" ? "vr" : "tm") }, m.role === "board" ? "VR" : "T"),
-          e("div", { className: "bubble" },
-            e("div", { className: "bname " + (m.role === "board" ? "vr" : "tm") }, m.role === "board" ? "Vikram Rao · Executive Director" : "Team · Presentation"),
-            e("div", { className: "btext " + (m.role === "board" ? "vr" : "tm") }, m.text),
-            m.role === "board" && m.delta !== null && m.delta !== undefined
-              ? e("div", { className: "signal", style: { color: signalColor(m.delta) } }, e("span", { style: { fontWeight: 600 } }, "◆"), e("span", null, signalLabel(m.delta)))
-              : null
-          )
-        )
+    e("div", {className:"doc-header b-border"},
+      e("div", {className:"seal r-border"}, "IG"),
+      e("div", {className:"title-area r-border"},
+        e("div", {className:"title-main"}, "Hearing Transcript"),
+        e("div", {className:"title-sub"}, "IndiGo Executive Board // Strategy Division")
       ),
-
-      // Thinking / typing state
-      (thinking || typingText) && e("div", { className: "row" },
-        e("div", { className: "av vr" }, "VR"),
-        e("div", { className: "bubble" },
-          e("div", { className: "bname vr" }, "Vikram Rao · Executive Director"),
-          thinking
-            ? e("div", { className: "thinking" }, "Reviewing your argument", e("span", { className: "dots" }, e("span"), e("span"), e("span")))
-            : e("div", { className: "btext vr" }, typingText)
-        )
-      ),
-
-      // Error + retry
-      error && e("div", null,
-        e("div", { className: "err-inline" }, e("strong", null, "Board feed error — prompt not consumed: "), error),
-        lastMsg && e("button", { className: "retry", onClick: handleRetry }, "Retry Last Prompt")
-      ),
-
-      e("div", { ref: bottomRef })
+      e("div", {className:"meta-area"},
+        e("div", {className:"meta-row b-border warning"}, e("span", null, "T-MINUS (SEC)"), e("span", null, fmtTime(timeLeft))),
+        e("div", {className:"meta-row"}, e("span", null, "PROMPTS REMAINING"), e("span", null, promptsLeft + " / " + MAX_PROMPTS))
+      )
+    ),
+    
+    e("div", {className:"meter-container b-border"},
+      e("div", {className:"meter-lbl"}, e("span", null, "Board Conviction Status"), e("span", null, pct + "%")),
+      e("div", {className:"meter-track"},
+        e("div", {className:"meter-target", style:{left: APPROVAL_THRESHOLD+'%'}}),
+        e("div", {className:"meter-fill", style:{width: pct+'%'}})
+      )
     ),
 
-    // Input bar
-    e("div", { className: "ibar" },
-      promptsLeft <= 0
-        ? e("div", { className: "submitted" }, "All prompts submitted — awaiting board verdict")
-        : e("div", null,
-            e("div", { className: "iwrap" },
-              e("textarea", {
-                ref: inputRef,
-                value: input,
-                rows: 3,
-                onChange: ev => setInput(ev.target.value),
-                onKeyDown: ev => { if (ev.key === "Enter" && !ev.shiftKey) { ev.preventDefault(); handleSend(); } },
-                disabled: thinking || !!typingText,
-                placeholder: "Address the board... (Enter to submit)",
-                className: "ifield"
-              }),
-              e("button", { className: "isend", onClick: () => handleSend(), disabled: !input.trim() || thinking || !!typingText }, "Submit")
-            ),
-            e("div", { className: "ihint" }, promptsLeft + " of " + MAX_PROMPTS + " prompts remaining · " + fmtTime(timeLeft) + " · Enter to submit, Shift+Enter for new line")
+    e("div", {className:"transcript-area"},
+      messages.map((m,i) => e("div", {key:i, className:`log-entry ${m.role}`},
+        
+        e("div", {className:"log-sidebar"},
+          e("div", {className: "speaker-info-wrap"}, 
+             e("div", {className:"speaker-name", style:{color: m.role==='board'?'var(--indigo)':'#000'}}, m.role === 'board' ? 'Vikram Rao' : 'Presenting Team'),
+             e("div", {className:"speaker-time"}, m.time)
+          ),
+          m.role === 'board' && m.delta !== undefined && m.delta !== null && e("div", {className: "speaker-score-wrap"},
+            e("div", {className:"speaker-delta", style:{color:m.delta>0?'var(--green)':'var(--red)'}}, m.delta > 0 ? `+${m.delta} PTS` : '0 PTS'),
+            e("div", {className:"speaker-reason"}, signalLabel(m.delta))
           )
+        ),
+
+        e("div", {className:"log-content"},
+          e("div", {className:`log-text ${m.role}`}, m.text)
+        )
+      )),
+      
+      (thinking || phase === "active_loading") && e("div", {className:"log-entry board"},
+        e("div", {className:"log-sidebar"}, 
+          e("div", {className: "speaker-info-wrap"}, e("div", {className:"speaker-name", style:{color: 'var(--indigo)'}}, "Vikram Rao"))
+        ),
+        e("div", {className:"log-content"}, e("div", {className:"log-text", style:{fontStyle:'italic', color:'#888'}}, "[ Establishing connection", e("span", {className:"typing-cursor"}), " ]"))
+      ),
+
+      (typingText) && e("div", {className:"log-entry board"},
+        e("div", {className:"log-sidebar"}, 
+          e("div", {className: "speaker-info-wrap"}, 
+             e("div", {className:"speaker-name", style:{color: 'var(--indigo)'}}, "Vikram Rao")
+          ),
+          typingDelta !== null && e("div", {className: "speaker-score-wrap"},
+            e("div", {className:"speaker-delta", style:{color:typingDelta>0?'var(--green)':'var(--red)'}}, typingDelta > 0 ? `+${typingDelta} PTS` : '0 PTS'),
+            e("div", {className:"speaker-reason"}, signalLabel(typingDelta))
+          )
+        ),
+        e("div", {className:"log-content"}, 
+          e("div", {className:"log-text"}, typingText, e("span", {className:"typing-cursor"}))
+        )
+      ),
+      e("div", {ref:bottomRef})
+    ),
+
+    e("div", {className:"input-section t-border"},
+      e("textarea", {
+        ref: inputRef,
+        className:"input-textarea",
+        value: input,
+        onChange: e => setInput(e.target.value),
+        onKeyDown: e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } },
+        disabled: thinking || !!typingText || promptsLeft <= 0 || phase !== "active",
+        placeholder: promptsLeft <= 0 ? "You have deployed all prompts." : (phase !== "active" ? "Awaiting connection..." : "Type strategy response...")
+      }),
+      e("div", {className:"input-footer t-border"},
+        e("div", {className:"input-info"}, "ENTER SUBMIT // SHIFT+ENTER NEWLINE"),
+        e("button", {className:"btn-submit", onClick:handleSend, disabled:!input.trim() || thinking || !!typingText || promptsLeft <= 0 || phase !== "active"}, "Submit to Board")
+      )
     )
   );
 }

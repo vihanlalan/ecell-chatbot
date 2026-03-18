@@ -42,7 +42,8 @@ app.post('/api/chat', async (req, res) => {
       body: JSON.stringify({
         model: 'llama-3.3-70b-versatile',
         messages: groqMessages,
-        temperature: 0.8,
+        temperature: 0.1,
+        response_format: { type: "json_object" },
         max_tokens: 1024
       })
     });
@@ -109,9 +110,15 @@ CONVICTION DELTA 0-15:
 11-13: Strong — metrics, competitive framing, risk awareness
 14-15: Exceptional — comprehensive, anticipates objections
 
+EXAMPLES OF GOOD VS BAD PROMPTS:
+- Team: "We will increase marketing."
+  {"boardResponse":"Marketing doesn't fix grounded planes. Give me a strategy.","convictionDelta":2,"boardMood":"skeptical"}
+- Team: "We will dry lease 20 A320s to cover the 16% capacity gap while hedging ATF at $85/bbl."
+  {"boardResponse":"Dry leasing protects market share, but what are the margin implications?","convictionDelta":12,"boardMood":"interested"}
+
 OPENER: Introduce yourself in 2 sentences. Reference the crisis dossier. Ask for their single overarching strategic thesis (not a list of initiatives). Set convictionDelta to 0.
 
-CRITICAL: Output ONLY a raw JSON object. No markdown. No code fences. No text before or after.
+CRITICAL: Output ONLY a valid JSON object. No markdown. No code fences. No text before or after.
 {"boardResponse":"<your response as Vikram Rao, ending with one question>","convictionDelta":<integer 0-15>,"boardMood":"skeptical"|"neutral"|"interested"|"impressed"}`;
 
   // Inject curveball on the 4th user message turn (when messages array length is exactly 7 or greater)
