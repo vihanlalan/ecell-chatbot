@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IndiGo · Board Strategy Session</title>
+<meta name="description" content="IndiGo Airlines AI Board Strategy Session — Convince a skeptical board member that your turnaround strategy is sound.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+:root{
+  --gold:#c9a227;--gold-light:#e8c060;--gold-dim:#7a6218;--gold-faint:#2a1f08;
+  --bg:#080705;--surface:#0f0d09;--surface2:#161310;--surface3:#1e1a12;
+  --cream:#f5ead8;--cream2:#c8b898;--cream3:#8a7a5a;--cream4:#3a3020;
+  --border-gold:#4a3a18;--border2:#3a3018;
+  --red:#c84040;--green:#3ab878;--amber:#c87020;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--cream);font-family:'DM Sans',system-ui,sans-serif;}
+#app{min-height:100vh;display:flex;flex-direction:column;position:relative;}
+.grid{position:fixed;inset:0;background-image:linear-gradient(rgba(201,162,39,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(201,162,39,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.z1{position:relative;z-index:1;}
+
+/* ── INTRO ── */
+.intro{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:2.5rem;text-align:center;}
+.logo-wrap{width:72px;height:72px;background:var(--surface2);border:1px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;position:relative;}
+.logo-wrap::before,.logo-wrap::after{content:'';position:absolute;width:8px;height:8px;border-color:var(--gold);border-style:solid;}
+.logo-wrap::before{top:-1px;left:-1px;border-width:1px 0 0 1px;}
+.logo-wrap::after{bottom:-1px;right:-1px;border-width:0 1px 1px 0;}
+.logo-txt{font-size:22px;font-weight:700;color:var(--gold);font-family:'Playfair Display',serif;}
+.eyebrow{font-size:10px;letter-spacing:0.3em;color:var(--gold-dim);text-transform:uppercase;font-weight:500;margin-bottom:1.25rem;}
+.intro-title{font-size:30px;font-weight:700;color:var(--cream);letter-spacing:-0.5px;font-family:'Playfair Display',serif;margin-bottom:0.25rem;}
+.intro-sub{font-size:11px;letter-spacing:0.2em;color:var(--cream3);text-transform:uppercase;margin-bottom:2rem;}
+.divider{display:flex;align-items:center;gap:12px;width:360px;max-width:100%;margin:0 auto 2rem;}
+.div-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--border-gold),transparent);}
+.div-diamond{width:6px;height:6px;background:var(--gold);transform:rotate(45deg);flex-shrink:0;}
+.dossier{background:var(--surface);border:1px solid var(--border-gold);padding:1.5rem 2rem;max-width:480px;margin:0 auto 2rem;position:relative;}
+.dossier::before{content:'CLASSIFIED DOSSIER';position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:var(--surface);padding:0 10px;font-size:9px;letter-spacing:0.25em;color:var(--gold-dim);font-weight:600;}
+.dossier-item{display:flex;gap:10px;font-size:13px;color:var(--cream2);line-height:1.5;padding:5px 0;border-bottom:1px solid var(--border2);text-align:left;}
+.dossier-item:last-child{border-bottom:none;}
+.dossier-n{font-size:10px;color:var(--gold);font-weight:600;min-width:16px;padding-top:1px;flex-shrink:0;}
+.stats{display:flex;gap:2rem;justify-content:center;margin-top:1.5rem;}
+.stat-val{font-size:22px;font-weight:700;color:var(--gold);font-family:'Playfair Display',serif;}
+.stat-lbl{font-size:10px;color:var(--cream3);letter-spacing:0.12em;text-transform:uppercase;margin-top:2px;}
+.sep{width:1px;background:var(--border-gold);align-self:stretch;}
+.cta{background:var(--gold);color:#080705;border:none;padding:14px 44px;font-size:13px;font-weight:600;cursor:pointer;letter-spacing:0.12em;text-transform:uppercase;font-family:'DM Sans',sans-serif;transition:background 0.2s;margin-top:2rem;}
+.cta:hover:not(:disabled){background:var(--gold-light);}
+.cta:disabled{opacity:0.5;cursor:not-allowed;}
+.err{font-size:12px;color:var(--red);max-width:460px;margin:0.75rem auto 0;border:1px solid rgba(200,64,64,0.3);padding:0.6rem 1rem;background:rgba(200,64,64,0.07);line-height:1.6;word-break:break-word;text-align:left;}
+
+/* ── SESSION ── */
+.session{display:flex;flex-direction:column;height:100vh;}
+.hdr{background:var(--surface);border-bottom:1px solid var(--border-gold);padding:0.75rem 1.5rem;display:flex;align-items:center;gap:0.875rem;flex-shrink:0;}
+.hdr::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold-dim),transparent);}
+.hdr-logo{width:36px;height:36px;background:var(--surface2);border:1px solid var(--border-gold);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--gold);flex-shrink:0;font-family:'Playfair Display',serif;}
+.hdr-info{flex:1;min-width:0;}
+.hdr-title{font-size:14px;font-weight:600;color:var(--cream);letter-spacing:0.03em;font-family:'Playfair Display',serif;}
+.hdr-sub{font-size:10px;color:var(--cream3);letter-spacing:0.1em;text-transform:uppercase;margin-top:1px;}
+.pill{display:flex;align-items:center;gap:5px;background:var(--surface2);border:1px solid var(--border-gold);padding:4px 10px;flex-shrink:0;}
+.pill-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.pill-txt{font-size:10px;color:var(--cream3);letter-spacing:0.08em;white-space:nowrap;}
+.timer-txt{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:0.05em;}
+.prompt-dots{display:flex;gap:3px;align-items:center;}
+.pdot{width:8px;height:8px;border-radius:1px;transition:background 0.3s;}
+
+/* ── METER ── */
+.meter{background:var(--surface);border-bottom:1px solid var(--border-gold);padding:0.7rem 1.5rem;flex-shrink:0;}
+.meter-row{display:flex;align-items:center;gap:0.75rem;margin-bottom:4px;}
+.meter-lbl{font-size:9px;font-weight:600;color:var(--cream3);letter-spacing:0.25em;text-transform:uppercase;min-width:130px;}
+.meter-track{flex:1;height:6px;background:var(--surface3);border:1px solid var(--border2);position:relative;overflow:visible;}
+.meter-fill{height:100%;transition:width 0.7s cubic-bezier(.4,0,.2,1),background 0.4s;}
+.meter-marker{position:absolute;top:-8px;font-size:8px;color:var(--cream3);letter-spacing:0.06em;white-space:nowrap;transform:translateX(-50%);pointer-events:none;}
+.meter-pct{font-size:13px;font-weight:700;min-width:36px;text-align:right;font-variant-numeric:tabular-nums;font-family:'Playfair Display',serif;}
+.meter-sub{display:flex;justify-content:space-between;font-size:9px;color:var(--cream4);letter-spacing:0.08em;padding-left:130px;}
+
+/* ── CHAT ── */
+.chat{flex:1;overflow-y:auto;padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:1rem;}
+.chat::-webkit-scrollbar{width:4px;}
+.chat::-webkit-scrollbar-thumb{background:var(--border-gold);}
+.row{display:flex;gap:0.75rem;align-items:flex-start;}
+.row.user{flex-direction:row-reverse;}
+.av{width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:2px;font-family:'Playfair Display',serif;position:relative;}
+.av.vr{background:var(--surface2);border:1px solid var(--gold-dim);color:var(--gold);}
+.av.vr::before,.av.vr::after{content:'';position:absolute;width:5px;height:5px;border-color:var(--gold);border-style:solid;}
+.av.vr::before{top:-1px;left:-1px;border-width:1px 0 0 1px;}
+.av.vr::after{bottom:-1px;right:-1px;border-width:0 1px 1px 0;}
+.av.tm{background:var(--surface2);border:1px solid var(--border2);color:var(--cream3);}
+.bubble{max-width:72%;}
+.bname{font-size:9px;letter-spacing:0.18em;text-transform:uppercase;font-weight:600;margin-bottom:5px;}
+.bname.vr{color:var(--gold-dim);}
+.bname.tm{color:var(--cream3);}
+.btext{font-size:13.5px;line-height:1.75;padding:0.875rem 1.1rem;border:1px solid;}
+.btext.vr{color:var(--cream);background:var(--surface2);border-color:var(--border-gold);}
+.btext.tm{color:var(--cream2);background:var(--surface);border-color:var(--border2);}
+.signal{font-size:10px;margin-top:5px;display:flex;align-items:center;gap:5px;padding-left:2px;letter-spacing:0.04em;}
+.thinking{font-size:13px;color:var(--cream3);padding:0.75rem 1rem;background:var(--surface2);border:1px solid var(--border-gold);}
+.dots{display:inline-flex;gap:3px;margin-left:4px;}
+.dots span{width:4px;height:4px;border-radius:50%;background:var(--gold-dim);display:inline-block;animation:blink 1.2s infinite;}
+.dots span:nth-child(2){animation-delay:0.2s;}
+.dots span:nth-child(3){animation-delay:0.4s;}
+@keyframes blink{0%,100%{opacity:0.3;}50%{opacity:1;}}
+.err-inline{font-size:12px;color:var(--red);background:rgba(200,64,64,0.07);border:1px solid rgba(200,64,64,0.2);padding:0.6rem 0.9rem;line-height:1.5;word-break:break-word;margin:0.25rem 0;}
+.retry{font-size:11px;color:var(--gold);background:none;border:1px solid var(--gold-dim);padding:5px 12px;cursor:pointer;margin-top:6px;letter-spacing:0.08em;text-transform:uppercase;display:inline-block;}
+.retry:hover{background:var(--gold-faint);}
+
+/* ── INPUT ── */
+.ibar{background:var(--surface);border-top:1px solid var(--border-gold);padding:1rem 1.5rem;flex-shrink:0;}
+.ibar::before{content:'';display:block;height:1px;background:linear-gradient(90deg,transparent,var(--gold-dim),transparent);margin-bottom:1rem;}
+.iwrap{display:flex;gap:0.75rem;align-items:flex-end;}
+.ifield{flex:1;background:var(--surface2);border:1px solid var(--border-gold);padding:0.75rem 1rem;font-size:13.5px;color:var(--cream);resize:none;outline:none;line-height:1.6;font-family:'DM Sans',sans-serif;transition:border-color 0.2s;}
+.ifield:focus{border-color:var(--gold-dim);}
+.ifield::placeholder{color:var(--cream4);}
+.isend{background:var(--gold);color:#080705;border:none;padding:0.875rem 1.25rem;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;letter-spacing:0.12em;text-transform:uppercase;font-family:'DM Sans',sans-serif;transition:background 0.2s;}
+.isend:hover:not(:disabled){background:var(--gold-light);}
+.isend:disabled{opacity:0.4;cursor:not-allowed;}
+.ihint{font-size:10px;color:var(--cream4);margin-top:6px;letter-spacing:0.05em;}
+.submitted{text-align:center;font-size:12px;color:var(--cream3);padding:0.5rem;letter-spacing:0.1em;text-transform:uppercase;}
+
+/* ── VERDICT ── */
+.verdict{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:2.5rem;text-align:center;}
+.vseal{width:80px;height:80px;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 1.5rem;}
+.vtitle{font-size:28px;font-weight:700;font-family:'Playfair Display',serif;letter-spacing:-0.5px;margin-bottom:0.5rem;}
+.vquote{font-size:14px;font-style:italic;line-height:1.7;max-width:460px;margin:1.5rem auto;padding:1.5rem 1.5rem 1.5rem 2.5rem;border:1px solid;position:relative;text-align:left;}
+.vquote::before{content:'\201C';font-size:48px;position:absolute;top:-10px;left:12px;font-family:'Playfair Display',serif;line-height:1;}
+.vstats{display:flex;gap:2.5rem;justify-content:center;margin:1.5rem 0;}
+.vstat-val{font-size:28px;font-weight:700;font-family:'Playfair Display',serif;}
+.vstat-lbl{font-size:10px;letter-spacing:0.15em;text-transform:uppercase;margin-top:3px;color:var(--cream3);}
+.vnote{font-size:11px;color:var(--cream4);letter-spacing:0.06em;}
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script>
+const { useState, useEffect, useRef, useCallback } = React;
+const e = React.createElement;
+
+// ─────────────────────────────────────────────
+// CONSTANTS
+// ─────────────────────────────────────────────
+const MAX_PROMPTS = 7;
+const SESSION_SECS = 25 * 60;
+const APPROVAL_THRESHOLD = 62; // percent
+const MAX_SCORE = MAX_PROMPTS * 15;
+
+const APPROVAL_LINES = [
+  "Strategy approved. You demonstrated the rigour this board demands. Don't make me regret it.",
+  "The board votes in favour. Reluctantly impressed. Quarterly reviews will be merciless — execute accordingly.",
+  "Proposal approved. Sharp thinking, well-structured. Now move before Air India does.",
+  "You've earned your runway. The board approves. Remember — aviation punishes hesitation."
+];
+const REJECT_LINES = [
+  "This is precisely how airlines go bankrupt. Return with numbers, not narratives. Rejected.",
+  "IndiGo didn't dominate Indian aviation on half-formed strategy. Hard pass. Do your homework.",
+  "I've heard more rigorous pitches from MBA interns. This proposal is rejected.",
+  "We needed a turnaround plan. You delivered a mood board. Rejected."
+];
+const MOOD_COLORS = { skeptical:"#c84040", neutral:"#8a7a5a", interested:"#c89030", impressed:"#3ab878" };
+const MOOD_LABELS = { skeptical:"Skeptical", neutral:"Neutral", interested:"Interested", impressed:"Impressed" };
+
+// ─────────────────────────────────────────────
+// API CALL — uses the server proxy at /api/chat
+// The API key stays on the server, never exposed
+// ─────────────────────────────────────────────
+async function callAPI(history, dossier) {
+  const res = await fetch("/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ messages: history, dossier })
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error || `Server error ${res.status}`);
+  }
+  const data = await res.json();
+  if (!data.raw) throw new Error("Empty response from server");
+  return data.raw;
+}
+
+// ─────────────────────────────────────────────
+// JSON EXTRACTION — multiple fallback strategies
+// ─────────────────────────────────────────────
+function parseBoard(raw) {
+  if (!raw || typeof raw !== "string") return null;
+
+  // 1. Clean and try direct parse
+  const clean = raw.trim().replace(/^```json\s*/i, "").replace(/^```/, "").replace(/```$/, "").trim();
+  try { const p = JSON.parse(clean); if (p.boardResponse) return p; } catch(_) {}
+
+  // 2. Extract outermost { } block
+  const start = clean.indexOf("{");
+  const end = clean.lastIndexOf("}");
+  if (start !== -1 && end > start) {
+    try { const p = JSON.parse(clean.slice(start, end + 1)); if (p.boardResponse) return p; } catch(_) {}
+  }
+
+  // 3. Field-level regex — handles escaped quotes and newlines inside the string
+  const mText = clean.match(/"boardResponse"\s*:\s*"((?:[^"\\]|\\[\s\S])*)"/);
+  if (mText) {
+    const mDelta = clean.match(/"convictionDelta"\s*:\s*(\d+)/);
+    const mMood  = clean.match(/"boardMood"\s*:\s*"(skeptical|neutral|interested|impressed)"/);
+    return {
+      boardResponse: mText[1].replace(/\\n/g, "\n").replace(/\\"/g, '"').replace(/\\'/g, "'"),
+      convictionDelta: mDelta ? parseInt(mDelta[1], 10) : 0,
+      boardMood: mMood ? mMood[1] : "skeptical"
+    };
+  }
+
+  // 4. Model ignored format — treat entire output as the board response
+  if (clean.length > 20) {
+    return { boardResponse: clean, convictionDelta: 0, boardMood: "skeptical" };
+  }
+
+  return null;
+}
+
+// ─────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────
+const fmtTime = s => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+const meterColor = pct => pct < 30 ? "#c84040" : pct < 55 ? "#c87020" : pct < APPROVAL_THRESHOLD ? "#c9a227" : "#3ab878";
+const signalLabel = d => d > 10 ? "Strong argument — conviction gained" : d > 6 ? "Sound argument" : d > 3 ? "Weak argument — insufficient evidence" : "Unconvincing — no material conviction gained";
+const signalColor = d => d > 10 ? "#3ab878" : d > 6 ? "#c9a227" : d > 3 ? "#c87020" : "#c84040";
+
+// ─────────────────────────────────────────────
+// MAIN COMPONENT
+// ─────────────────────────────────────────────
+function BoardSession() {
+  const [dossierStats] = useState(() => ({
+    atf: Math.floor(Math.random() * 23) + 22,
+    acGrounded: Math.floor(Math.random() * 42) + 61,
+    otpStart: Math.floor(Math.random() * 7) + 80,
+    otpEnd: Math.floor(Math.random() * 11) + 61,
+    npsDrop: Math.floor(Math.random() * 15) + 14,
+    stockDrop: Math.floor(Math.random() * 15) + 12,
+    curveballIndex: Math.floor(Math.random() * 6)
+  }));
+
+  // Single source of truth for phase: "intro" | "loading" | "active" | "ended"
+  const [phase, setPhase]         = useState("intro");
+  const [messages, setMessages]   = useState([]);  // {role, text, mood?, delta?}
+  const [input, setInput]         = useState("");
+  const [score, setScore]         = useState(0);
+  const [mood, setMood]           = useState("skeptical");
+  const [promptsLeft, setPromptsLeft] = useState(MAX_PROMPTS);
+  const [timeLeft, setTimeLeft]   = useState(SESSION_SECS);
+  const [thinking, setThinking]   = useState(false);
+  const [typingText, setTypingText] = useState("");
+  const [verdict, setVerdict]     = useState(null);   // {approved, line}
+  const [error, setError]         = useState(null);
+  const [lastMsg, setLastMsg]     = useState(null);   // for retry
+
+  // Refs that don't need to trigger re-renders
+  const historyRef    = useRef([]);   // clean conversation history for API
+  const scoreRef      = useRef(0);    // always in sync with score state
+  const promptsRef    = useRef(MAX_PROMPTS); // always in sync with promptsLeft state
+  const typingTimer   = useRef(null);
+  const sessionTimer  = useRef(null);
+  const bottomRef     = useRef(null);
+  const inputRef      = useRef(null);
+  const isSending     = useRef(false); // prevent double-send
+
+  // Keep refs in sync
+  useEffect(() => { scoreRef.current = score; }, [score]);
+  useEffect(() => { promptsRef.current = promptsLeft; }, [promptsLeft]);
+
+  // Auto-scroll
+  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, typingText, error]);
+
+  // Cleanup on unmount
+  useEffect(() => () => {
+    clearInterval(sessionTimer.current);
+    clearInterval(typingTimer.current);
+  }, []);
+
+  // ── Session timer ──
+  const startTimer = useCallback(() => {
+    clearInterval(sessionTimer.current);
+    sessionTimer.current = setInterval(() => {
+      setTimeLeft(t => {
+        if (t <= 1) {
+          clearInterval(sessionTimer.current);
+          // Use refs so closure has fresh values
+          concludeSession(scoreRef.current);
+          return 0;
+        }
+        return t - 1;
+      });
+    }, 1000);
+  }, []);
+
+  // ── Typing animation ──
+  const animateTyping = useCallback((text, onComplete) => {
+    clearInterval(typingTimer.current);
+    let i = 0;
+    setTypingText("");
+    typingTimer.current = setInterval(() => {
+      i++;
+      setTypingText(text.slice(0, i));
+      if (i >= text.length) {
+        clearInterval(typingTimer.current);
+        setTypingText("");
+        onComplete(text);
+      }
+    }, 11);
+  }, []);
+
+  // ── Conclude session ──
+  const concludeSession = useCallback((finalScore) => {
+    clearInterval(sessionTimer.current);
+    clearInterval(typingTimer.current);
+    const pct = Math.min(100, Math.round((finalScore / MAX_SCORE) * 100));
+    const approved = pct >= APPROVAL_THRESHOLD;
+    setVerdict({ approved, line: pick(approved ? APPROVAL_LINES : REJECT_LINES) });
+    setPhase("ended");
+  }, []);
+
+  // ── Process a board response and add to chat ──
+  const processBoardReply = useCallback((raw, newPromptsLeft, newScore) => {
+    const parsed = parseBoard(raw);
+    if (!parsed) {
+      setError("Could not parse board response. Raw: " + raw.slice(0, 120));
+      isSending.current = false;
+      return;
+    }
+
+    const delta = clamp(typeof parsed.convictionDelta === "number" ? parsed.convictionDelta : 0, 0, 15);
+    const updatedScore = Math.min(MAX_SCORE, newScore + delta);
+    setScore(updatedScore);
+    scoreRef.current = updatedScore;
+    setMood(parsed.boardMood || "neutral");
+
+    animateTyping(parsed.boardResponse, (text) => {
+      setMessages(prev => [...prev, {
+        role: "board",
+        text,
+        mood: parsed.boardMood,
+        delta: delta
+      }]);
+      isSending.current = false;
+      if (newPromptsLeft <= 0) {
+        setTimeout(() => concludeSession(updatedScore), 1500);
+      } else {
+        inputRef.current?.focus();
+      }
+    });
+  }, [animateTyping, concludeSession]);
+
+  // ── Start session ──
+  const handleStart = useCallback(async () => {
+    if (phase !== "intro") return;
+    setPhase("loading");
+    setError(null);
+    historyRef.current = [];
+
+    try {
+      historyRef.current = [{ role: "user", content: "Begin the board session." }];
+      const raw = await callAPI(historyRef.current, dossierStats);
+      historyRef.current.push({ role: "assistant", content: raw });
+
+      const parsed = parseBoard(raw);
+      if (!parsed) throw new Error("Could not parse opener. Raw: " + raw.slice(0, 120));
+
+      setMood(parsed.boardMood || "skeptical");
+      setPhase("active");
+      startTimer();
+
+      animateTyping(parsed.boardResponse, (text) => {
+        setMessages([{ role: "board", text, mood: parsed.boardMood, delta: null }]);
+        inputRef.current?.focus();
+      });
+    } catch (err) {
+      historyRef.current = [];
+      setPhase("intro");
+      setError(err.message);
+    }
+  }, [phase, animateTyping, startTimer]);
+
+  // ── Send a user message ──
+  const handleSend = useCallback(async (overrideText) => {
+    const text = (overrideText || input).trim();
+    if (!text || isSending.current || thinking || typingText || promptsRef.current <= 0 || phase !== "active") return;
+
+    isSending.current = true;
+    setInput("");
+    setError(null);
+    setLastMsg(text);
+
+    // Decrement prompts
+    const newPromptsLeft = promptsRef.current - 1;
+    setPromptsLeft(newPromptsLeft);
+    promptsRef.current = newPromptsLeft;
+
+    // Add user message to UI
+    setMessages(prev => [...prev, { role: "user", text }]);
+    setThinking(true);
+
+    // Build history snapshot for this call
+    const callHistory = [...historyRef.current, { role: "user", content: text }];
+
+    try {
+      const raw = await callAPI(callHistory, dossierStats);
+      // Only commit to historyRef after success
+      historyRef.current = [...callHistory, { role: "assistant", content: raw }];
+      setThinking(false);
+      processBoardReply(raw, newPromptsLeft, scoreRef.current);
+    } catch (err) {
+      // Roll back: restore prompt, remove user message from UI
+      setThinking(false);
+      setPromptsLeft(p => p + 1);
+      promptsRef.current = newPromptsLeft + 1;
+      setMessages(prev => prev.slice(0, -1)); // remove the optimistically added user msg
+      setError(err.message);
+      isSending.current = false;
+    }
+  }, [input, thinking, typingText, phase, processBoardReply]);
+
+  // ── Retry ──
+  const handleRetry = useCallback(() => {
+    if (!lastMsg) return;
+    setError(null);
+    handleSend(lastMsg);
+  }, [lastMsg, handleSend]);
+
+  // ─────────────────────────────────────────────
+  // RENDER
+  // ─────────────────────────────────────────────
+  const pct = Math.min(100, Math.round((score / MAX_SCORE) * 100));
+  const mc = meterColor(pct);
+  const moodColor = MOOD_COLORS[mood] || "#8a7a5a";
+  const timerWarn = timeLeft < 300;
+
+  // ── INTRO / LOADING ──
+  if (phase === "intro" || phase === "loading") {
+    return e("div", { className: "intro z1" },
+      e("div", { className: "grid" }),
+      e("div", { className: "eyebrow" }, "IndiGo Airlines · Strategy Division · Classified"),
+      e("div", { className: "logo-wrap" }, e("div", { className: "logo-txt" }, "IG")),
+      e("h1", { className: "intro-title" }, "Board Strategy Session"),
+      e("p", { className: "intro-sub" }, "Vikram Rao, Executive Director"),
+      e("div", { className: "divider" }, e("div", { className: "div-line" }), e("div", { className: "div-diamond" }), e("div", { className: "div-line" })),
+      e("div", { className: "dossier" },
+        [`ATF fuel costs +${dossierStats.atf}% · cost per ASK deteriorating`,
+         `Air India 470-aircraft order threatens all routes`,
+         `${dossierStats.acGrounded} aircraft grounded pending mandatory GTF inspections`,
+         `OTP collapsed ${dossierStats.otpStart}%→${dossierStats.otpEnd}% — DGCA notices filed`,
+         `NPS down ${dossierStats.npsDrop} pts · stock down ${dossierStats.stockDrop}% YTD`
+        ].map((item, i) =>
+          e("div", { key: i, className: "dossier-item" }, e("span", { className: "dossier-n" }, i + 1), e("span", null, item))
+        )
+      ),
+      error && e("div", { className: "err" }, e("strong", null, "Connection error: "), error),
+      e("div", { className: "stats" },
+        e("div", null, e("div", { className: "stat-val" }, "7"), e("div", { className: "stat-lbl" }, "Prompts")),
+        e("div", { className: "sep" }),
+        e("div", null, e("div", { className: "stat-val" }, "25"), e("div", { className: "stat-lbl" }, "Minutes")),
+        e("div", { className: "sep" }),
+        e("div", null, e("div", { className: "stat-val" }, APPROVAL_THRESHOLD + "%"), e("div", { className: "stat-lbl" }, "To Approve"))
+      ),
+      e("button", { className: "cta", onClick: handleStart, disabled: phase === "loading" },
+        phase === "loading" ? "Convening the Board..." : "Enter the Boardroom"
+      )
+    );
+  }
+
+  // ── VERDICT ──
+  if (phase === "ended" && verdict) {
+    const vc = verdict.approved ? "var(--gold)" : "var(--red)";
+    return e("div", { className: "verdict z1" },
+      e("div", { className: "grid" }),
+      e("div", { className: "vseal", style: { borderColor: vc, color: vc } }, verdict.approved ? "✓" : "✗"),
+      e("div", { className: "divider", style: { width: 320, margin: "0 auto 1.25rem" } },
+        e("div", { className: "div-line" }), e("div", { className: "div-diamond", style: { background: vc } }), e("div", { className: "div-line" })
+      ),
+      e("h1", { className: "vtitle", style: { color: vc } }, verdict.approved ? "Strategy Approved" : "Proposal Rejected"),
+      e("div", { className: "vquote", style: { borderColor: verdict.approved ? "var(--border-gold)" : "#3a1010", background: verdict.approved ? "var(--surface)" : "#0f0808", color: verdict.approved ? "var(--cream2)" : "#c89898" } }, verdict.line),
+      e("div", { className: "vstats" },
+        e("div", null, e("div", { className: "vstat-val", style: { color: vc } }, pct + "%"), e("div", { className: "vstat-lbl" }, "Conviction")),
+        e("div", { className: "sep" }),
+        e("div", null, e("div", { className: "vstat-val", style: { color: "var(--gold)" } }, MAX_PROMPTS - promptsLeft), e("div", { className: "vstat-lbl" }, "Prompts Used")),
+        e("div", { className: "sep" }),
+        e("div", null, e("div", { className: "vstat-val", style: { color: "var(--cream2)" } }, fmtTime(SESSION_SECS - timeLeft)), e("div", { className: "vstat-lbl" }, "Time Elapsed"))
+      ),
+      e("p", { className: "vnote" }, "Approval threshold · " + APPROVAL_THRESHOLD + "% conviction · Maximum attainable · 100%")
+    );
+  }
+
+  // ── ACTIVE SESSION ──
+  return e("div", { className: "session z1" },
+    e("div", { className: "grid" }),
+
+    // Header
+    e("div", { className: "hdr" },
+      e("div", { className: "hdr-logo" }, "IG"),
+      e("div", { className: "hdr-info" },
+        e("div", { className: "hdr-title" }, "IndiGo Board Session"),
+        e("div", { className: "hdr-sub" }, "Vikram Rao · Executive Director")
+      ),
+      e("div", { className: "pill" }, e("div", { className: "pill-dot", style: { background: moodColor } }), e("span", { className: "pill-txt" }, "Board: " + (MOOD_LABELS[mood] || "Neutral"))),
+      e("div", { className: "pill", style: { borderColor: timerWarn ? "#5a1a1a" : "var(--border-gold)" } },
+        e("span", { className: "timer-txt", style: { color: timerWarn ? "var(--red)" : "var(--cream2)" } }, fmtTime(timeLeft))
+      ),
+      e("div", { className: "prompt-dots" },
+        Array.from({ length: MAX_PROMPTS }).map((_, i) =>
+          e("div", { key: i, className: "pdot", style: { background: i < MAX_PROMPTS - promptsLeft ? "var(--gold)" : i === MAX_PROMPTS - promptsLeft ? "var(--gold-dim)" : "var(--border-gold)" } })
+        )
+      ),
+      e("span", { className: "pill-txt", style: { flexShrink: 0 } }, promptsLeft + " remaining")
+    ),
+
+    // Convince-O-Meter
+    e("div", { className: "meter" },
+      e("div", { className: "meter-row" },
+        e("span", { className: "meter-lbl" }, "Convince-O-Meter"),
+        e("div", { className: "meter-track" },
+          e("div", { className: "meter-fill", style: { width: pct + "%", background: mc } }),
+          e("div", { className: "meter-marker", style: { left: APPROVAL_THRESHOLD + "%" } }, "▼ " + APPROVAL_THRESHOLD + "%")
+        ),
+        e("span", { className: "meter-pct", style: { color: mc } }, pct + "%")
+      ),
+      e("div", { className: "meter-sub" }, e("span", null, "No Conviction"), e("span", { style: { color: "var(--cream3)" } }, "Approval Zone →"), e("span", null, "Full Conviction"))
+    ),
+
+    // Chat messages
+    e("div", { className: "chat" },
+      messages.map((m, i) =>
+        e("div", { key: i, className: "row " + (m.role === "user" ? "user" : "") },
+          e("div", { className: "av " + (m.role === "board" ? "vr" : "tm") }, m.role === "board" ? "VR" : "T"),
+          e("div", { className: "bubble" },
+            e("div", { className: "bname " + (m.role === "board" ? "vr" : "tm") }, m.role === "board" ? "Vikram Rao · Executive Director" : "Team · Presentation"),
+            e("div", { className: "btext " + (m.role === "board" ? "vr" : "tm") }, m.text),
+            m.role === "board" && m.delta !== null && m.delta !== undefined
+              ? e("div", { className: "signal", style: { color: signalColor(m.delta) } }, e("span", { style: { fontWeight: 600 } }, "◆"), e("span", null, signalLabel(m.delta)))
+              : null
+          )
+        )
+      ),
+
+      // Thinking / typing state
+      (thinking || typingText) && e("div", { className: "row" },
+        e("div", { className: "av vr" }, "VR"),
+        e("div", { className: "bubble" },
+          e("div", { className: "bname vr" }, "Vikram Rao · Executive Director"),
+          thinking
+            ? e("div", { className: "thinking" }, "Reviewing your argument", e("span", { className: "dots" }, e("span"), e("span"), e("span")))
+            : e("div", { className: "btext vr" }, typingText)
+        )
+      ),
+
+      // Error + retry
+      error && e("div", null,
+        e("div", { className: "err-inline" }, e("strong", null, "Board feed error — prompt not consumed: "), error),
+        lastMsg && e("button", { className: "retry", onClick: handleRetry }, "Retry Last Prompt")
+      ),
+
+      e("div", { ref: bottomRef })
+    ),
+
+    // Input bar
+    e("div", { className: "ibar" },
+      promptsLeft <= 0
+        ? e("div", { className: "submitted" }, "All prompts submitted — awaiting board verdict")
+        : e("div", null,
+            e("div", { className: "iwrap" },
+              e("textarea", {
+                ref: inputRef,
+                value: input,
+                rows: 3,
+                onChange: ev => setInput(ev.target.value),
+                onKeyDown: ev => { if (ev.key === "Enter" && !ev.shiftKey) { ev.preventDefault(); handleSend(); } },
+                disabled: thinking || !!typingText,
+                placeholder: "Address the board... (Enter to submit)",
+                className: "ifield"
+              }),
+              e("button", { className: "isend", onClick: () => handleSend(), disabled: !input.trim() || thinking || !!typingText }, "Submit")
+            ),
+            e("div", { className: "ihint" }, promptsLeft + " of " + MAX_PROMPTS + " prompts remaining · " + fmtTime(timeLeft) + " · Enter to submit, Shift+Enter for new line")
+          )
+    )
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("app")).render(e(BoardSession));
+</script>
+</body>
+</html>

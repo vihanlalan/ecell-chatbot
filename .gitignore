@@ -1,0 +1,11 @@
+# Dependencies
+node_modules/
+
+# Environment Variables (CRITICAL: DO NOT PUSH API KEYS)
+.env
+
+# MacOS
+.DS_Store
+
+# Temporary Files
+test.js
