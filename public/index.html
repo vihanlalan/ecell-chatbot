@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Official Record: IndiGo Strategy Session</title>
+<title>Official Record: Ola Group Recovery Strategy</title>
 <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
 <style>
 /* ── STRICT BRUTALIST CORPORATE THEME ── */
@@ -192,6 +192,17 @@ button { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; cursor: po
   .modal-title { font-size: 18px; }
   .modal-rules { font-size: 13px; }
 }
+
+/* ── TAB SWITCH WARNING ── */
+.tab-warning-overlay {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(209, 31, 31, 0.95);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 200; color: #fff; text-align: center; padding: 2rem;
+}
+.tab-warning-title { font-size: 28px; font-weight: 800; text-transform: uppercase; margin-bottom: 16px; }
+.tab-warning-msg { font-size: 16px; line-height: 1.6; max-width: 400px; margin-bottom: 24px; }
+.tab-warning-count { font-family: 'Courier Prime', monospace; font-size: 14px; opacity: 0.8; }
 </style>
 </head>
 <body>
@@ -208,16 +219,15 @@ const MAX_PROMPTS = 7;
 const SESSION_SECS = 25 * 60;
 const APPROVAL_THRESHOLD = 62;
 const MAX_SCORE = MAX_PROMPTS * 15;
-const STORAGE_KEY = 'indigo_board_session_v1';
+const STORAGE_KEY = 'ola_board_session_v1';
 
-const APPROVAL_LINES = ["Strategy approved. You demonstrated the rigour this board demands.", "The board votes in favour. Quarterly reviews will be merciless.", "Proposal approved. Execute accordingly."];
-const REJECT_LINES = ["This is precisely how airlines go bankrupt. Rejected.", "Hard pass. Return with numbers, not narratives.", "I've heard more rigorous pitches from interns. Rejected."];
+const APPROVAL_LINES = ["Recovery plan approved. You demonstrated the rigour this crisis demands.", "The board votes in favour. Quarterly milestones will be ruthlessly tracked.", "Proposal approved. Now execute before the market buries Ola for good."];
+const REJECT_LINES = ["This is precisely how tech empires collapse. Rejected.", "Hard pass. Return with numbers, not narratives.", "80,000 complaints a month and this is your recovery plan? Rejected."];
 
-async function callAPI(history, dossier) {
-  const res = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ messages: history, dossier }) });
+async function callAPI(history, sessionId) {
+  const res = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ messages: history, sessionId }) });
   if (!res.ok) throw new Error("API Error");
-  const data = await res.json();
-  return data.raw;
+  return await res.json(); // { raw, serverScore, serverPct, promptsUsed }
 }
 
 function parseBoard(raw) {
@@ -246,14 +256,8 @@ function BoardSession() {
     return null;
   });
 
-  const [dossierStats] = useState(initial?.dossierStats || {
-    atf: Math.floor(Math.random() * 23) + 22,
-    acGrounded: Math.floor(Math.random() * 42) + 61,
-    otpStart: Math.floor(Math.random() * 7) + 80,
-    otpEnd: Math.floor(Math.random() * 11) + 61,
-    npsDrop: Math.floor(Math.random() * 15) + 14,
-    stockDrop: Math.floor(Math.random() * 15) + 12
-  });
+  const [dossierStats, setDossierStats] = useState(initial?.dossierStats || null);
+  const [sessionId, setSessionId] = useState(initial?.sessionId || null);
 
   const [phase, setPhase] = useState(initial?.phase || "intro"); 
   const [messages, setMessages] = useState(initial?.messages || []);
@@ -266,6 +270,8 @@ function BoardSession() {
   const [typingText, setTypingText] = useState("");
   const [typingDelta, setTypingDelta] = useState(null);
   const [verdict, setVerdict] = useState(initial?.verdict || null);
+  const [tabSwitchCount, setTabSwitchCount] = useState(0);
+  const [showTabWarning, setShowTabWarning] = useState(false);
 
   const historyRef = useRef(initial?.history || []);
   const scoreRef = useRef(0);
@@ -278,12 +284,31 @@ function BoardSession() {
   useEffect(() => { scoreRef.current = score; promptsRef.current = promptsLeft; }, [score, promptsLeft]);
   
   useEffect(() => {
-    const stateSnapshot = { phase, messages, score, promptsLeft, timeLeft, verdict, dossierStats, history: historyRef.current };
+    const stateSnapshot = { phase, messages, score, promptsLeft, timeLeft, verdict, dossierStats, sessionId, history: historyRef.current };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stateSnapshot));
-  }, [phase, messages, score, promptsLeft, timeLeft, verdict, dossierStats]);
+  }, [phase, messages, score, promptsLeft, timeLeft, verdict, dossierStats, sessionId]);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, thinking, typingText]);
   useEffect(() => () => { clearInterval(timers.current.session); clearInterval(timers.current.typing); }, []);
+
+  // ── Tab switch / visibility detection ──
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.hidden && (phase === "active" || phase === "active_loading")) {
+        setTabSwitchCount(c => c + 1);
+        setShowTabWarning(true);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => document.removeEventListener('visibilitychange', handleVisibility);
+  }, [phase]);
+
+  // ── Disable right-click context menu during session ──
+  useEffect(() => {
+    const block = (ev) => { if (phase === 'active') ev.preventDefault(); };
+    document.addEventListener('contextmenu', block);
+    return () => document.removeEventListener('contextmenu', block);
+  }, [phase]);
 
   const concludeSession = useCallback((finalScore) => {
     clearInterval(timers.current.session);
@@ -330,19 +355,26 @@ function BoardSession() {
     }, 15);
   }, []);
 
-  const processResponse = useCallback((raw, usedPrompts, currentScore) => {
-    const parsed = parseBoard(raw);
+  const processResponse = useCallback((apiResponse, remainingPrompts) => {
+    const parsed = parseBoard(apiResponse.raw);
     if (!parsed) return setThinking(false);
 
+    // Use server-authoritative score
+    const serverScore = apiResponse.serverScore || 0;
+    setScore(serverScore); scoreRef.current = serverScore;
     const delta = Math.max(0, Math.min(15, parsed.convictionDelta || 0));
-    const newScore = Math.min(MAX_SCORE, currentScore + delta);
-    setScore(newScore); scoreRef.current = newScore;
     const tz = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
     
     animateTyping(parsed.boardResponse, delta, (completedText) => {
       setMessages(p => [...p, { role: "board", text: completedText, delta, time: tz }]);
-      if (usedPrompts <= 0) setTimeout(() => concludeSession(newScore), 1500);
-      else setTimeout(() => inputRef.current?.focus(), 100);
+      // Check if session was terminated by ethics violation
+      if (apiResponse.sessionTerminated) {
+        setTimeout(() => concludeSession(0), 1500);
+      } else if (remainingPrompts <= 0) {
+        setTimeout(() => concludeSession(serverScore), 1500);
+      } else {
+        setTimeout(() => inputRef.current?.focus(), 100);
+      }
     });
 
   }, [animateTyping, concludeSession]);
@@ -357,13 +389,22 @@ function BoardSession() {
   const AcceptRulesAndConnect = async () => {
     setPhase("active_loading");
     try {
+      // Create server session — dossier is generated on the server
+      const sessionRes = await fetch("/api/session/create", { method: "POST", headers: { "Content-Type": "application/json" } });
+      if (!sessionRes.ok) throw new Error("Failed to create session");
+      const { sessionId: newSessionId, dossier } = await sessionRes.json();
+      setSessionId(newSessionId);
+      setDossierStats(dossier);
+
       historyRef.current = [{ role: "user", content: "Begin." }];
-      const raw = await callAPI(historyRef.current, dossierStats);
-      historyRef.current.push({ role: "assistant", content: raw });
-      const parsed = parseBoard(raw);
+      const apiResponse = await callAPI(historyRef.current, newSessionId);
+      historyRef.current.push({ role: "assistant", content: apiResponse.raw });
+      const parsed = parseBoard(apiResponse.raw);
       
       setPhase("active"); 
       startTimer();
+      // Request fullscreen
+      try { document.documentElement.requestFullscreen?.(); } catch(_) {}
       const textToType = parsed?.boardResponse || "Begin.";
       animateTyping(textToType, null, (completedText) => {
         setMessages([{ role: "board", text: completedText, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }]);
@@ -391,10 +432,10 @@ function BoardSession() {
     
     const snap = [...historyRef.current, { role: "user", content: txt }];
     try {
-      const raw = await callAPI(snap, dossierStats);
-      historyRef.current = [...snap, { role: "assistant", content: raw }];
+      const apiResponse = await callAPI(snap, sessionId);
+      historyRef.current = [...snap, { role: "assistant", content: apiResponse.raw }];
       setThinking(false);
-      processResponse(raw, newPLeft, scoreRef.current);
+      processResponse(apiResponse, newPLeft);
     } catch (e) {
       setThinking(false); setPromptsLeft(p => p + 1); setMessages(p => p.slice(0, -1));
     }
@@ -402,12 +443,14 @@ function BoardSession() {
 
   if (phase === "intro") return e("div", {className:"document"},
     e("div", {className:"cover-sheet"},
-      e("h1", {className:"cover-title"}, "Strategic Operations\nBoard Review"),
-      e("div", {className:"cover-sub"}, "Confidential Document // IndiGo Airlines"),
+      e("h1", {className:"cover-title"}, "Recovery Strategy\nBoard Review"),
+      e("div", {className:"cover-sub"}, "Confidential Document // Ola Group"),
       e("table", {className:"dossier-table"}, e("tbody", null,
-        e("tr", null, e("th", null, "Fuel Alert"), e("td", null, `ATF costs +${dossierStats.atf}% (severe ASK impact)`)),
-        e("tr", null, e("th", null, "Fleet Status"), e("td", null, `${dossierStats.acGrounded} A320neos grounded (P&W inspections)`)),
-        e("tr", null, e("th", null, "OTP Index"), e("td", null, `Collapsed to ${dossierStats.otpEnd}% (DGCA Notices issued)`))
+        e("tr", null, e("th", null, "Market Share"), e("td", null, "EV share collapsed from ~56% peak to under 6% — sales down ~85%")),
+        e("tr", null, e("th", null, "Valuation"), e("td", null, "Ola Consumer valuation slashed ~83% to $1.25B — duopoly broken")),
+        e("tr", null, e("th", null, "Stock Price"), e("td", null, "Post-IPO share price down ~70% from high")),
+        e("tr", null, e("th", null, "Leadership"), e("td", null, "~12 senior executives resigned including CTO")),
+        e("tr", null, e("th", null, "Service Crisis"), e("td", null, "80,000+ unresolved complaints/month — CCPA crackdown"))
       )),
       e("button", {className:"btn-large", onClick:initiateBriefing}, "Initiate Briefing"),
       initial && e("div", {className:"reset-btn", onClick:clearRecords}, "[ ERASE LOCAL LOGS & RESTART ]")
@@ -418,7 +461,7 @@ function BoardSession() {
     e("div", {className:"cover-sheet"},
       e("div", {className:`verdict-stamp ${verdict.approved?'pass':'fail'}`}, verdict.approved ? "APPROVED" : "REJECTED"),
       e("h1", {className:"cover-title"}, "Final Board Ruling"),
-      e("div", {className:"cover-sub", style:{marginBottom:'16px'}}, "Executive Director: Vikram Rao"),
+      e("div", {className:"cover-sub", style:{marginBottom:'16px'}}, "Board Advisor: Arjun Mehta"),
       e("p", {style:{fontFamily:"'Playfair Display'", fontSize:'18px', marginBottom:'32px'}}, verdict.line),
       e("div", {style:{fontFamily:"'Courier Prime'", fontSize:'14px'}}, `Final Conviction: ${verdict.pct}% // Threshold: ${APPROVAL_THRESHOLD}%`),
       e("div", {className:"reset-btn", onClick:clearRecords}, "[ ERASE LOCAL LOGS & START NEW SESSION ]")
@@ -433,7 +476,7 @@ function BoardSession() {
       e("div", {className:"modal-box"},
         e("div", {className:"modal-title"}, "Rules of Engagement"),
         e("div", {className:"modal-rules"},
-          e("p", null, "You are entering a high-stakes board negotiation with Vikram Rao, Executive Director of IndiGo."),
+          e("p", null, "You are entering a high-stakes board negotiation with Arjun Mehta, Board Advisor to the Ola Group."),
           e("ul", null,
             e("li", null, "You have exactly ", e("strong", null, "25 minutes"), " on the clock."),
             e("li", null, "You are limited to ", e("strong", null, "7 prompts"), ". Make every word count."),
@@ -447,10 +490,10 @@ function BoardSession() {
     ),
 
     e("div", {className:"doc-header b-border"},
-      e("div", {className:"seal r-border"}, "IG"),
+      e("div", {className:"seal r-border"}, "OLA"),
       e("div", {className:"title-area r-border"},
         e("div", {className:"title-main"}, "Hearing Transcript"),
-        e("div", {className:"title-sub"}, "IndiGo Executive Board // Strategy Division")
+        e("div", {className:"title-sub"}, "Ola Group Board // Strategy Division")
       ),
       e("div", {className:"meta-area"},
         e("div", {className:"meta-row b-border warning"}, e("span", null, "T-MINUS (SEC)"), e("span", null, fmtTime(timeLeft))),
@@ -471,7 +514,7 @@ function BoardSession() {
         
         e("div", {className:"log-sidebar"},
           e("div", {className: "speaker-info-wrap"}, 
-             e("div", {className:"speaker-name", style:{color: m.role==='board'?'var(--indigo)':'#000'}}, m.role === 'board' ? 'Vikram Rao' : 'Presenting Team'),
+             e("div", {className:"speaker-name", style:{color: m.role==='board'?'var(--indigo)':'#000'}}, m.role === 'board' ? 'Arjun Mehta' : 'Presenting Team'),
              e("div", {className:"speaker-time"}, m.time)
           ),
           m.role === 'board' && m.delta !== undefined && m.delta !== null && e("div", {className: "speaker-score-wrap"},
@@ -487,7 +530,7 @@ function BoardSession() {
       
       (thinking || phase === "active_loading") && e("div", {className:"log-entry board"},
         e("div", {className:"log-sidebar"}, 
-          e("div", {className: "speaker-info-wrap"}, e("div", {className:"speaker-name", style:{color: 'var(--indigo)'}}, "Vikram Rao"))
+          e("div", {className: "speaker-info-wrap"}, e("div", {className:"speaker-name", style:{color: 'var(--indigo)'}}, "Arjun Mehta"))
         ),
         e("div", {className:"log-content"}, e("div", {className:"log-text", style:{fontStyle:'italic', color:'#888'}}, "[ Establishing connection", e("span", {className:"typing-cursor"}), " ]"))
       ),
@@ -495,7 +538,7 @@ function BoardSession() {
       (typingText) && e("div", {className:"log-entry board"},
         e("div", {className:"log-sidebar"}, 
           e("div", {className: "speaker-info-wrap"}, 
-             e("div", {className:"speaker-name", style:{color: 'var(--indigo)'}}, "Vikram Rao")
+             e("div", {className:"speaker-name", style:{color: 'var(--indigo)'}}, "Arjun Mehta")
           ),
           typingDelta !== null && e("div", {className: "speaker-score-wrap"},
             e("div", {className:"speaker-delta", style:{color:typingDelta>0?'var(--green)':'var(--red)'}}, typingDelta > 0 ? `+${typingDelta} PTS` : '0 PTS'),
@@ -516,13 +559,22 @@ function BoardSession() {
         value: input,
         onChange: e => setInput(e.target.value),
         onKeyDown: e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } },
+        onPaste: e => { e.preventDefault(); },
         disabled: thinking || !!typingText || promptsLeft <= 0 || phase !== "active",
-        placeholder: promptsLeft <= 0 ? "You have deployed all prompts." : (phase !== "active" ? "Awaiting connection..." : "Type strategy response...")
+        placeholder: promptsLeft <= 0 ? "You have deployed all prompts." : (phase !== "active" ? "Awaiting connection..." : "Type strategy response (paste disabled)...")
       }),
       e("div", {className:"input-footer t-border"},
-        e("div", {className:"input-info"}, "ENTER SUBMIT // SHIFT+ENTER NEWLINE"),
+        e("div", {className:"input-info"}, "ENTER SUBMIT // PASTE DISABLED // NO TAB SWITCHING"),
         e("button", {className:"btn-submit", onClick:handleSend, disabled:!input.trim() || thinking || !!typingText || promptsLeft <= 0 || phase !== "active"}, "Submit to Board")
       )
+    ),
+
+    // Tab switch warning overlay
+    showTabWarning && e("div", {className: "tab-warning-overlay", onClick: () => { setShowTabWarning(false); try { document.documentElement.requestFullscreen?.(); } catch(_) {} }},
+      e("div", {className: "tab-warning-title"}, "⚠ Tab Switch Detected"),
+      e("div", {className: "tab-warning-msg"}, "Switching tabs during the board session is not permitted. This has been logged. Please remain in the session window."),
+      e("div", {className: "tab-warning-count"}, `Tab violations: ${tabSwitchCount}`),
+      e("button", {className: "btn-acknowledge", style: {maxWidth: '300px', marginTop: '16px'}}, "Return to Session")
     )
   );
 }
