@@ -272,6 +272,8 @@ function BoardSession() {
   const [verdict, setVerdict] = useState(initial?.verdict || null);
   const [tabSwitchCount, setTabSwitchCount] = useState(0);
   const [showTabWarning, setShowTabWarning] = useState(false);
+  const [fullscreenExitCount, setFullscreenExitCount] = useState(0);
+  const [showFullscreenWarning, setShowFullscreenWarning] = useState(false);
 
   const historyRef = useRef(initial?.history || []);
   const scoreRef = useRef(0);
@@ -332,6 +334,25 @@ function BoardSession() {
   useEffect(() => {
     if (initial?.phase === "active") startTimer();
   }, [initial, startTimer]);
+
+  // ── Fullscreen exit detection ──
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      if (!document.fullscreenElement && (phase === "active" || phase === "active_loading")) {
+        setFullscreenExitCount(c => {
+          const next = c + 1;
+          if (next >= 2) {
+            concludeSession(0);
+          } else {
+            setShowFullscreenWarning(true);
+          }
+          return next;
+        });
+      }
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, [phase, concludeSession]);
 
   const animateTyping = useCallback((text, delta, onComplete) => {
     clearInterval(timers.current.typing);
@@ -574,6 +595,14 @@ function BoardSession() {
       e("div", {className: "tab-warning-title"}, "⚠ Tab Switch Detected"),
       e("div", {className: "tab-warning-msg"}, "Switching tabs during the board session is not permitted. This has been logged. Please remain in the session window."),
       e("div", {className: "tab-warning-count"}, `Tab violations: ${tabSwitchCount}`),
+      e("button", {className: "btn-acknowledge", style: {maxWidth: '300px', marginTop: '16px'}}, "Return to Session")
+    ),
+
+    // Fullscreen exit warning overlay
+    showFullscreenWarning && e("div", {className: "tab-warning-overlay", onClick: () => { setShowFullscreenWarning(false); try { document.documentElement.requestFullscreen?.(); } catch(_) {} }},
+      e("div", {className: "tab-warning-title"}, "⚠ Fullscreen Exit Detected"),
+      e("div", {className: "tab-warning-msg"}, "Exiting fullscreen during the board session is not permitted. This is your only warning. A second violation will result in immediate rejection of your proposal."),
+      e("div", {className: "tab-warning-count"}, `Fullscreen violations: ${fullscreenExitCount}`),
       e("button", {className: "btn-acknowledge", style: {maxWidth: '300px', marginTop: '16px'}}, "Return to Session")
     )
   );
