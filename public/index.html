@@ -218,7 +218,7 @@ const e = React.createElement;
 const MAX_PROMPTS = 7;
 const SESSION_SECS = 25 * 60;
 const APPROVAL_THRESHOLD = 62;
-const MAX_SCORE = (MAX_PROMPTS - 1) * 15;
+const MAX_SCORE = MAX_PROMPTS * 15;
 const STORAGE_KEY = 'ola_board_session_v1';
 
 const APPROVAL_LINES = ["Recovery plan approved. You demonstrated the rigour this crisis demands.", "The board votes in favour. Quarterly milestones will be ruthlessly tracked.", "Proposal approved. Now execute before the market buries Ola for good."];
@@ -274,21 +274,23 @@ function BoardSession() {
   const [showTabWarning, setShowTabWarning] = useState(false);
   const [fullscreenExitCount, setFullscreenExitCount] = useState(0);
   const [showFullscreenWarning, setShowFullscreenWarning] = useState(false);
+  const [teamName, setTeamName] = useState(initial?.teamName || "");
 
   const historyRef = useRef(initial?.history || []);
   const scoreRef = useRef(0);
   const promptsRef = useRef(MAX_PROMPTS);
+  const sessionIdRef = useRef(initial?.sessionId || null);
   const timers = useRef({ session: null, typing: null });
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
 
   // Synchronize state locally and persistently
-  useEffect(() => { scoreRef.current = score; promptsRef.current = promptsLeft; }, [score, promptsLeft]);
+  useEffect(() => { scoreRef.current = score; promptsRef.current = promptsLeft; sessionIdRef.current = sessionId; }, [score, promptsLeft, sessionId]);
   
   useEffect(() => {
-    const stateSnapshot = { phase, messages, score, promptsLeft, timeLeft, verdict, dossierStats, sessionId, history: historyRef.current };
+    const stateSnapshot = { phase, messages, score, promptsLeft, timeLeft, verdict, dossierStats, sessionId, teamName, history: historyRef.current };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stateSnapshot));
-  }, [phase, messages, score, promptsLeft, timeLeft, verdict, dossierStats, sessionId]);
+  }, [phase, messages, score, promptsLeft, timeLeft, verdict, dossierStats, sessionId, teamName]);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, thinking, typingText]);
   useEffect(() => () => { clearInterval(timers.current.session); clearInterval(timers.current.typing); }, []);
@@ -331,8 +333,12 @@ function BoardSession() {
     clearInterval(timers.current.session);
     clearInterval(timers.current.typing);
     const pct = Math.min(100, Math.round((finalScore / MAX_SCORE) * 100));
-    setVerdict({ approved: pct >= APPROVAL_THRESHOLD, line: pct >= APPROVAL_THRESHOLD ? APPROVAL_LINES[0] : REJECT_LINES[0], pct });
+    const approved = pct >= APPROVAL_THRESHOLD;
+    const line = approved ? APPROVAL_LINES[0] : REJECT_LINES[0];
+    setVerdict({ approved, line, pct });
     setPhase("ended");
+    // Store verdict in Supabase
+    fetch("/api/session/verdict", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sessionId: sessionIdRef.current, verdict: approved, verdictLine: line }) }).catch(() => {});
   }, []);
 
   const startTimer = useCallback(() => {
@@ -416,6 +422,7 @@ function BoardSession() {
   }, [animateTyping, concludeSession]);
 
   const initiateBriefing = () => {
+    if (!teamName.trim()) return alert("Please enter your team name.");
     setPhase("rules_wait");
     setTimeout(() => {
       setPhase("rules");
@@ -426,7 +433,7 @@ function BoardSession() {
     setPhase("active_loading");
     try {
       // Create server session — dossier is generated on the server
-      const sessionRes = await fetch("/api/session/create", { method: "POST", headers: { "Content-Type": "application/json" } });
+      const sessionRes = await fetch("/api/session/create", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ teamName: teamName.trim() }) });
       if (!sessionRes.ok) throw new Error("Failed to create session");
       const { sessionId: newSessionId, dossier } = await sessionRes.json();
       setSessionId(newSessionId);
@@ -439,6 +446,7 @@ function BoardSession() {
       // Capture opener score from server
       const openerScore = apiResponse.serverScore || 0;
       setScore(openerScore); scoreRef.current = openerScore;
+      setPromptsLeft(MAX_PROMPTS); // Opener doesn't count as a user prompt
       
       setPhase("active"); 
       startTimer();
@@ -491,6 +499,18 @@ function BoardSession() {
         e("tr", null, e("th", null, "Leadership"), e("td", null, "~12 senior executives resigned including CTO")),
         e("tr", null, e("th", null, "Service Crisis"), e("td", null, "80,000+ unresolved complaints/month — CCPA crackdown"))
       )),
+      e("div", {style:{margin:'24px 0', textAlign:'center'}},
+        e("label", {style:{fontFamily:"'IBM Plex Mono'", fontSize:'13px', color:'var(--dark-gray)', display:'block', marginBottom:'8px'}}, "TEAM DESIGNATION"),
+        e("input", {
+          type: "text",
+          value: teamName,
+          onChange: ev => setTeamName(ev.target.value),
+          placeholder: "Enter your team name",
+          maxLength: 60,
+          style: { width:'280px', padding:'10px 14px', fontSize:'15px', fontFamily:"'IBM Plex Mono'", border:'2px solid var(--indigo)', background:'#fff', textAlign:'center', letterSpacing:'0.5px' },
+          onKeyDown: ev => { if (ev.key === 'Enter') initiateBriefing(); }
+        })
+      ),
       e("button", {className:"btn-large", onClick:initiateBriefing}, "Initiate Briefing"),
       initial && e("div", {className:"reset-btn", onClick:clearRecords}, "[ ERASE LOCAL LOGS & RESTART ]")
     )
@@ -502,7 +522,7 @@ function BoardSession() {
       e("h1", {className:"cover-title"}, "Final Board Ruling"),
       e("div", {className:"cover-sub", style:{marginBottom:'16px'}}, "Board Advisor: Arjun Mehta"),
       e("p", {style:{fontFamily:"'Playfair Display'", fontSize:'18px', marginBottom:'32px'}}, verdict.line),
-      e("div", {style:{fontFamily:"'Courier Prime'", fontSize:'14px'}}, `Final Conviction: ${verdict.pct}% // Threshold: ${APPROVAL_THRESHOLD}%`),
+      e("div", {style:{fontFamily:"'Courier Prime'", fontSize:'14px'}}, "Session concluded."),
       e("div", {className:"reset-btn", onClick:clearRecords}, "[ ERASE LOCAL LOGS & START NEW SESSION ]")
     )
   );
@@ -520,7 +540,7 @@ function BoardSession() {
             e("li", null, "You have exactly ", e("strong", null, "25 minutes"), " on the clock."),
             e("li", null, "You are limited to ", e("strong", null, "7 prompts"), ". Make every word count."),
             e("li", null, "Solid arguments grant conviction points. Vague buzzwords grant nothing."),
-            e("li", null, "Your goal: Fill the Convince-O-Meter as high as possible before time or prompts run out.")
+            e("li", null, "Your goal: Convince the board advisor with strong, data-backed arguments before time or prompts run out.")
           ),
           e("p", {style:{fontStyle:'italic', color:'var(--dark-gray)', fontSize:'12px'}}, "Warning: The board may throw unexpected operational curveballs during the meeting.")
         ),
@@ -540,12 +560,7 @@ function BoardSession() {
       )
     ),
     
-    e("div", {className:"meter-container b-border"},
-      e("div", {className:"meter-lbl"}, e("span", null, "Board Conviction Status"), e("span", null, pct + "%")),
-      e("div", {className:"meter-track"},
-        e("div", {className:"meter-fill", style:{width: pct+'%'}})
-      )
-    ),
+    null, // conviction meter hidden from user
 
     e("div", {className:"transcript-area"},
       messages.map((m,i) => e("div", {key:i, className:`log-entry ${m.role}`},
