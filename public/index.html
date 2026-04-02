@@ -240,7 +240,8 @@ function parseBoard(raw) {
 }
 
 const fmtTime = s => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
-const signalLabel = d => d > 10 ? "Strong argument — conviction gained" : d > 6 ? "Sound argument" : d > 3 ? "Weak argument — insufficient evidence" : "Unconvincing — no material conviction gained";
+const scoreLabel = d => d > 10 ? "Good" : d > 3 ? "Moderate" : "Bad";
+const signalLabel = d => d > 10 ? "Strong argument — conviction gained" : d > 3 ? "Some substance — room for improvement" : "Unconvincing — no material conviction gained";
 
 function BoardSession() {
   const [initial] = useState(() => {
@@ -571,7 +572,7 @@ function BoardSession() {
              e("div", {className:"speaker-time"}, m.time)
           ),
           m.role === 'board' && m.delta !== undefined && m.delta !== null && e("div", {className: "speaker-score-wrap"},
-            e("div", {className:"speaker-delta", style:{color:m.delta>0?'var(--green)':'var(--red)'}}, m.delta > 0 ? `+${m.delta} PTS` : '0 PTS'),
+            e("div", {className:"speaker-delta", style:{color:scoreLabel(m.delta)==='Good'?'var(--green)':scoreLabel(m.delta)==='Moderate'?'var(--indigo)':'var(--red)'}}, scoreLabel(m.delta)),
             e("div", {className:"speaker-reason"}, signalLabel(m.delta))
           )
         ),
@@ -594,7 +595,7 @@ function BoardSession() {
              e("div", {className:"speaker-name", style:{color: 'var(--indigo)'}}, "Arjun Mehta")
           ),
           typingDelta !== null && e("div", {className: "speaker-score-wrap"},
-            e("div", {className:"speaker-delta", style:{color:typingDelta>0?'var(--green)':'var(--red)'}}, typingDelta > 0 ? `+${typingDelta} PTS` : '0 PTS'),
+            e("div", {className:"speaker-delta", style:{color:scoreLabel(typingDelta)==='Good'?'var(--green)':scoreLabel(typingDelta)==='Moderate'?'var(--indigo)':'var(--red)'}}, scoreLabel(typingDelta)),
             e("div", {className:"speaker-reason"}, signalLabel(typingDelta))
           )
         ),
