@@ -218,7 +218,7 @@ const e = React.createElement;
 const MAX_PROMPTS = 7;
 const SESSION_SECS = 25 * 60;
 const APPROVAL_THRESHOLD = 62;
-const MAX_SCORE = MAX_PROMPTS * 15;
+const MAX_SCORE = (MAX_PROMPTS - 1) * 15;
 const STORAGE_KEY = 'ola_board_session_v1';
 
 const APPROVAL_LINES = ["Recovery plan approved. You demonstrated the rigour this crisis demands.", "The board votes in favour. Quarterly milestones will be ruthlessly tracked.", "Proposal approved. Now execute before the market buries Ola for good."];
@@ -292,6 +292,21 @@ function BoardSession() {
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, thinking, typingText]);
   useEffect(() => () => { clearInterval(timers.current.session); clearInterval(timers.current.typing); }, []);
+
+  // ── Validate restored session still exists on server ──
+  useEffect(() => {
+    if (sessionId && (phase === "active" || phase === "ended")) {
+      fetch(`/api/session/${sessionId}`).then(r => {
+        if (!r.ok) {
+          localStorage.removeItem(STORAGE_KEY);
+          window.location.reload();
+        }
+      }).catch(() => {
+        localStorage.removeItem(STORAGE_KEY);
+        window.location.reload();
+      });
+    }
+  }, []);
 
   // ── Tab switch / visibility detection ──
   useEffect(() => {
@@ -380,10 +395,10 @@ function BoardSession() {
     const parsed = parseBoard(apiResponse.raw);
     if (!parsed) return setThinking(false);
 
-    // Use server-authoritative score
+    // Use server-authoritative score and delta
     const serverScore = apiResponse.serverScore || 0;
     setScore(serverScore); scoreRef.current = serverScore;
-    const delta = Math.max(0, Math.min(15, parsed.convictionDelta || 0));
+    const delta = apiResponse.serverDelta != null ? apiResponse.serverDelta : Math.max(0, Math.min(15, parsed.convictionDelta || 0));
     const tz = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
     
     animateTyping(parsed.boardResponse, delta, (completedText) => {
@@ -421,6 +436,9 @@ function BoardSession() {
       const apiResponse = await callAPI(historyRef.current, newSessionId);
       historyRef.current.push({ role: "assistant", content: apiResponse.raw });
       const parsed = parseBoard(apiResponse.raw);
+      // Capture opener score from server
+      const openerScore = apiResponse.serverScore || 0;
+      setScore(openerScore); scoreRef.current = openerScore;
       
       setPhase("active"); 
       startTimer();
@@ -502,7 +520,7 @@ function BoardSession() {
             e("li", null, "You have exactly ", e("strong", null, "25 minutes"), " on the clock."),
             e("li", null, "You are limited to ", e("strong", null, "7 prompts"), ". Make every word count."),
             e("li", null, "Solid arguments grant conviction points. Vague buzzwords grant nothing."),
-            e("li", null, "Your goal: Fill the Convince-O-Meter to ", e("strong", null, APPROVAL_THRESHOLD + "%"), " before time or prompts run out.")
+            e("li", null, "Your goal: Fill the Convince-O-Meter as high as possible before time or prompts run out.")
           ),
           e("p", {style:{fontStyle:'italic', color:'var(--dark-gray)', fontSize:'12px'}}, "Warning: The board may throw unexpected operational curveballs during the meeting.")
         ),
@@ -525,7 +543,6 @@ function BoardSession() {
     e("div", {className:"meter-container b-border"},
       e("div", {className:"meter-lbl"}, e("span", null, "Board Conviction Status"), e("span", null, pct + "%")),
       e("div", {className:"meter-track"},
-        e("div", {className:"meter-target", style:{left: APPROVAL_THRESHOLD+'%'}}),
         e("div", {className:"meter-fill", style:{width: pct+'%'}})
       )
     ),

@@ -5,7 +5,7 @@ const crypto  = require('crypto');
 
 // ── In-memory session store ──
 const MAX_PROMPTS = 7;
-const MAX_SCORE   = MAX_PROMPTS * 15;
+const MAX_SCORE   = (MAX_PROMPTS - 1) * 15;
 const SESSION_TTL = 30 * 60 * 1000; // 30 minutes
 const sessions    = new Map();
 
@@ -51,6 +51,7 @@ app.post('/api/session/create', (_req, res) => {
     score: 0,
     promptsUsed: 0,
     ethicsStrikes: 0,
+    aspectsCovered: [],
     createdAt: Date.now(),
     ended: false
   });
@@ -121,7 +122,7 @@ app.post('/api/chat', async (req, res) => {
   }
 
   const groqMessages = [
-    { role: 'system', content: buildSystemPrompt(dossier, messages.length) },
+    { role: 'system', content: buildSystemPrompt(dossier, messages.length, session?.promptsUsed || 0, session?.aspectsCovered || []) },
     ...messages.map(m => ({
       role: m.role === 'assistant' ? 'assistant' : 'user',
       content: String(m.content).slice(0, 4000)
@@ -163,24 +164,52 @@ app.post('/api/chat', async (req, res) => {
     // ── Server-side score tracking ──
     let serverScore = session?.score || 0;
     let promptsUsed = session?.promptsUsed || 0;
+    let serverDelta = 0;
     if (session && !session.ended) {
-      const delta = parseConvictionDelta(raw);
-      session.score = Math.min(MAX_SCORE, session.score + delta);
+      serverDelta = parseConvictionDelta(raw);
+      // Apply 1.5x multiplier on prompt 7 (promptsUsed is 6 at this point, about to become 7)
+      if (session.promptsUsed === 6) {
+        serverDelta = Math.min(15, Math.round(serverDelta * 1.5));
+      }
+      session.score = Math.min(MAX_SCORE, session.score + serverDelta);
       session.promptsUsed += 1;
       serverScore = session.score;
       promptsUsed = session.promptsUsed;
+      // Parse and track aspectsCovered from AI response
+      const aspects = parseAspectsCovered(raw);
+      if (aspects.length > 0) {
+        const coverSet = new Set(session.aspectsCovered);
+        aspects.forEach(a => coverSet.add(a));
+        session.aspectsCovered = Array.from(coverSet);
+      }
       if (session.promptsUsed >= MAX_PROMPTS) session.ended = true;
-      console.log(`[Session ${sessionId}] prompt=${promptsUsed} delta=+${delta} total=${serverScore}`);
+      console.log(`[Session ${sessionId}] prompt=${promptsUsed} delta=+${serverDelta} total=${serverScore} aspects=${JSON.stringify(session.aspectsCovered)}`);
     }
 
     const pct = Math.min(100, Math.round((serverScore / MAX_SCORE) * 100));
-    res.json({ raw, serverScore, serverPct: pct, promptsUsed });
+    res.json({ raw, serverScore, serverPct: pct, promptsUsed, serverDelta });
 
   } catch (err) {
     console.error('[Server error]', err.message);
     res.status(500).json({ error: 'Internal server error: ' + err.message });
   }
 });
+
+// ── Parse aspectsCovered from Groq response ──
+function parseAspectsCovered(raw) {
+  const VALID = new Set(['financials', 'ai', 'reliability']);
+  try {
+    const clean = raw.trim().replace(/^```json\s*/i, '').replace(/^```/, '').replace(/```$/, '').trim();
+    const start = clean.indexOf('{'), end = clean.lastIndexOf('}');
+    if (start !== -1 && end > start) {
+      const parsed = JSON.parse(clean.slice(start, end + 1));
+      if (Array.isArray(parsed.aspectsCovered)) {
+        return parsed.aspectsCovered.filter(a => VALID.has(a));
+      }
+    }
+  } catch (_) {}
+  return [];
+}
 
 // ── Parse convictionDelta from Groq response ──
 function parseConvictionDelta(raw) {
@@ -241,7 +270,13 @@ const CURVEBALLS = [
   "Uber India has slashed driver commission rates by 8% to poach Ola drivers en masse — driver attrition is accelerating"
 ];
 
-function buildSystemPrompt(dossier, messageCount) {
+function buildSystemPrompt(dossier, messageCount, promptsUsed, aspectsCovered) {
+  const promptNumber = (promptsUsed || 0) + 1;
+  const coveredSet = new Set(aspectsCovered || []);
+  const ALL_ASPECTS = ['financials', 'ai', 'reliability'];
+  const missingAspects = ALL_ASPECTS.filter(a => !coveredSet.has(a));
+  const missingLabels = missingAspects.map(a => a === 'financials' ? 'FINANCIALS' : a === 'ai' ? 'AI STRATEGY (Krutrim)' : 'RELIABILITY & TRUST IN EVs');
+
   let prompt = `You are Arjun Mehta, a veteran board advisor and 20-year Indian tech industry strategist. Analytical, formal, terse. Zero tolerance for vague strategy. Speak as a real person in a real boardroom evaluating a recovery plan for the Ola Group.
 
 CRISIS DOSSIER (classified):
@@ -253,11 +288,19 @@ CRISIS DOSSIER (classified):
 
 CORE ISSUE: The group's central failure is the institutionalisation of unreliable innovation — poor after-sales service, product reliability issues, leadership instability, and financial sustainability concerns across Ola Electric, Ola Consumer, and Krutrim.
 
+SECRET INTERNAL RUBRIC (NEVER mention to the team before Prompt 6 — this is for YOUR internal scoring only):
+You internally track whether the team covers these three areas, but you must NEVER name them, list them, hint at them, or ask the team to cover them:
+- Area A: financial recovery, cost restructuring, investor confidence, valuation, funding
+- Area B: Krutrim/AI role, AI integration, leadership stabilisation, technical roadmap
+- Area C: product quality, after-sales service, complaints, customer retention, regulatory compliance
+THIS IS CRITICAL: Your boardResponse must NEVER contain phrases like "three pillars", "three dimensions", "three areas", "financial pillar", "AI strategy", "reliability and trust" as category names, or any language that reveals you are scoring them on hidden categories. Just respond naturally as a board advisor would.
+
 RULES:
 - Directly address what the team just said — never give generic filler responses
 - Challenge product reliability claims, service infrastructure plans, competitive positioning against Rapido/Uber/Ather, customer retention metrics, and financial runway assumptions
 - Name specific buzzwords and demand numbers in exchange
 - NEVER say "continue your presentation" or any filler. Never break character.
+- NEVER mention "three pillars", "three areas", "three dimensions", or any language suggesting you have a hidden rubric. Do NOT list categories you expect them to cover. Just ask natural follow-up questions.
 - End every response with exactly ONE sharp question targeting the weakest point
 - 100-160 words. Formal register.
 
@@ -274,16 +317,50 @@ IMPORTANT SCORING GUIDANCE:
 - A decent argument with some numbers should score at least 7-8.
 - A strong argument with metrics and competitive awareness should score 11-13.
 
+ASPECT TRACKING:
+After each team response, you MUST identify which of the three pillars the team has meaningfully addressed IN THIS RESPONSE. Include ONLY aspects where the team provided substantive strategy (not just a passing mention).
+Valid values: "financials", "ai", "reliability"`;
+
+  // Stage-specific instructions
+  if (promptNumber === 1) {
+    prompt += `
+
+CURRENT STAGE: OPENER (Prompt 1 of 7)
+Introduce yourself in 2 sentences. Reference the crisis dossier briefly. Then ask the team to present their complete recovery strategy for the Ola Group. Do NOT mention the three secret pillars. Keep it open-ended — let them decide what to cover. Set convictionDelta to 0. Set aspectsCovered to [].`;
+  } else if (promptNumber >= 2 && promptNumber <= 5) {
+    prompt += `
+
+CURRENT STAGE: DEEP EVALUATION (Prompt ${promptNumber} of 7)
+This is a challenging evaluation phase. Push back hard on weak points. Demand specific numbers, timelines, and competitive data. Do NOT reveal the three secret scoring pillars. Ask probing questions naturally based on what the team said — if they haven't touched on a dimension, let them miss it. Be tough but fair.`;
+  } else if (promptNumber === 6) {
+    prompt += `
+
+CURRENT STAGE: GAP ANALYSIS — REVEAL (Prompt 6 of 7)
+This is the moment you reveal the hidden evaluation criteria.
+${missingAspects.length > 0
+  ? `Based on the conversation so far, the team has NOT adequately addressed: ${missingLabels.join(', ')}.
+You MUST now explicitly tell the team which area(s) they have been missing. Be direct — say something like: "You have not addressed [missing area]. This is your last chance to convince me on this front."`
+  : `The team has touched on all three pillars. Evaluate the weakest one and press for more depth.`}
+Evaluate their current response normally and score it, but your closing question MUST direct them toward the missing area(s).`;
+  } else if (promptNumber === 7) {
+    prompt += `
+
+CURRENT STAGE: FINAL EVALUATION (Prompt 7 of 7 — LAST CHANCE)
+This is the team's final response. ${missingAspects.length > 0 ? `They were previously told to address: ${missingLabels.join(', ')}.` : ''}
+Score this response with HIGHER WEIGHT — if they addressed the previously missing aspect(s) with substance, be generous (11-15). If they ignored the feedback, score harshly (0-5).
+This is your final evaluation. End with a brief closing statement instead of a question.`;
+  }
+
+  prompt += `
+
 EXAMPLES OF GOOD VS BAD PROMPTS:
 - Team: "We will improve customer experience."
-  {"boardResponse":"Customer experience is a bumper sticker, not a strategy. 80,000 complaints are piling up monthly. Give me a concrete resolution pipeline with timelines.","convictionDelta":2,"boardMood":"skeptical"}
+  {"boardResponse":"Customer experience is a bumper sticker, not a strategy. 80,000 complaints are piling up monthly. Give me a concrete resolution pipeline with timelines.","convictionDelta":2,"boardMood":"skeptical","aspectsCovered":[]}
 - Team: "We will deploy 500 mobile service vans in the top 30 cities within 90 days, targeting a 72-hour complaint resolution SLA, funded by pausing Krutrim's non-core R&D spend."
-  {"boardResponse":"Mobile service vans address the immediate crisis, and redirecting Krutrim burn is pragmatic. But what happens to EV market share while you're firefighting service?","convictionDelta":12,"boardMood":"interested"}
-
-OPENER: Introduce yourself in 2 sentences. Reference the crisis dossier. Ask for their single overarching strategic thesis (not a list of initiatives). Set convictionDelta to 0.
+  {"boardResponse":"Mobile service vans address the immediate crisis, and redirecting Krutrim burn is pragmatic. But what happens to EV market share while you're firefighting service?","convictionDelta":12,"boardMood":"interested","aspectsCovered":["reliability","financials"]}
 
 CRITICAL: Output ONLY a valid JSON object. No markdown. No code fences. No text before or after.
-{"boardResponse":"<your response as Arjun Mehta, ending with one question>","convictionDelta":<integer 0-15>,"boardMood":"skeptical"|"neutral"|"interested"|"impressed"}`;
+{"boardResponse":"<your response as Arjun Mehta>","convictionDelta":<integer 0-15>,"boardMood":"skeptical"|"neutral"|"interested"|"impressed","aspectsCovered":["financials"|"ai"|"reliability"]}`;
 
   // Inject curveball on the 4th user message turn (when messages array length is exactly 7 or greater)
   if (messageCount >= 7 && dossier?.curveballIndex !== undefined) {
