@@ -1,4 +1,4 @@
-# IndiGo Board Strategy Session
+# OLA Board Strategy Session
 
 A competitive AI boardroom simulation for case competitions.
 
